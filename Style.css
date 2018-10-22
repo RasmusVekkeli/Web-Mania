@@ -1,0 +1,33 @@
+﻿/*
+	This entire css is for centering the canvas horizontally + some other necessary things such as removing unnessessary margins and paddings.
+	Someone please tell me if there's a better way to do this, this is a mess.
+*/
+body {
+	margin: 0px;
+	padding: 0px;
+	overflow: hidden;
+	height: 100%;
+	width: 100vw;
+}
+
+#main_container{
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%;
+    margin: auto;
+}
+
+#game_canvas {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100vw;
+    height: 100vh;
+}
+
+@media (min-aspect-ratio: 16/9) {
+    #main_container {
+        padding-top: 100vh;
+        width: calc(100vh * (16 / 9));
+    }
+}
