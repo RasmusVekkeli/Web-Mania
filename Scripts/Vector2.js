@@ -12,9 +12,6 @@
 */
 class Vector2 {
 	constructor(x, y) {
-		//if ((typeof x != "number" && typeof x != "undefined") || (typeof y != "number" && typeof y != "undefined")) {
-		//	throw new TypeError(GenerateTypeErrorString(arguments, ["number", "number"]));
-		//}
 		const expectedParameterTypes = [["number", "undefined", "null"], ["number", "undefined", "null"]];
 		ValidateParameterTypes(arguments, expectedParameterTypes);
 
