@@ -8,13 +8,15 @@
  * x: Desired X-coordinate of the point, if not set, the value will be set as null
  * y: Desired Y-coordinate of the point, if not set, the value will be set as null
  * 
- * Constructor will throw an exception if the parameter types are not number
+ * Parameters will be checked for valid types
 */
 class Vector2 {
 	constructor(x, y) {
-		if ((typeof x != "number" && typeof x != "undefined") || (typeof y != "number" && typeof y != "undefined")) {
-			throw new TypeError(GenerateTypeErrorString(arguments, ["number", "number"]));
-		}
+		//if ((typeof x != "number" && typeof x != "undefined") || (typeof y != "number" && typeof y != "undefined")) {
+		//	throw new TypeError(GenerateTypeErrorString(arguments, ["number", "number"]));
+		//}
+		const expectedParameterTypes = [["number", "undefined", "null"], ["number", "undefined", "null"]];
+		ValidateParameterTypes(arguments, expectedParameterTypes);
 
 		this.x = (x === undefined ? null : x); 
 		this.y = (y === undefined ? null : y); 

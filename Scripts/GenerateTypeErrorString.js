@@ -1,5 +1,5 @@
 /*
- * Automatically generates an error string for TypeError exceptions
+ * Automatically generates an error string for TypeError exceptions, probably should not be called outside of validation functions
  * 
  * Function parameters:
  * parameters: array of parameters of the function that failed its type check
@@ -12,11 +12,23 @@ function GenerateTypeErrorString(parameters, expectedParameterTypes) {
 	var errorString = "Expected";
 
 	for (let i = 0; i < expectedParameterTypes.length; i++) {
+		//This is kinda badly written way to generate the string but it works, might rewrite in the future if I care enough
 		if (i != 0) {
 			errorString += ",";
 		}
 
-		errorString += " <" + expectedParameterTypes[i] + ">";
+		if (TypeOf(expectedParameterTypes[i]) == "array") {
+			for (let j = 0; j < expectedParameterTypes[i].length; j++) {
+				errorString += " <" + expectedParameterTypes[i][j] + ">";
+
+				if (j + 1 < expectedParameterTypes[i].length) {
+					errorString += " or";
+				}
+			}
+		}
+		else {
+			errorString += " <" + expectedParameterTypes[i] + ">";
+		}
 	}
 
 	errorString += "; received";
