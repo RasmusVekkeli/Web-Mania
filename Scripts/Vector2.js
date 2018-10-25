@@ -12,7 +12,7 @@
 */
 class Vector2 {
 	constructor(x, y) {
-		if (typeof x != "number" || typeof y != "number") {
+		if ((typeof x != "number" && typeof x != "undefined") || (typeof y != "number" && typeof y != "undefined")) {
 			throw new TypeError(GenerateTypeErrorString(arguments, ["number", "number"]));
 		}
 
