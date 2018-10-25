@@ -13,7 +13,7 @@
 class Vector2 {
 	constructor(x, y) {
 		if (typeof x != "number" || typeof y != "number") {
-			throw new TypeError("Unexpected parameter types! Expected number, number; received " + typeof x + ", " + typeof y + ".");
+			throw new TypeError(GenerateTypeErrorString(arguments, ["number", "number"]));
 		}
 
 		this.x = (x === undefined ? null : x); 
