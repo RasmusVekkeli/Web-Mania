@@ -7,13 +7,16 @@
  * Constructor parameters:
  * x: Desired X-coordinate of the point, if not set, the value will be set as null
  * y: Desired Y-coordinate of the point, if not set, the value will be set as null
+ * skipTypeCheck: Skips parameter type validation if true. Should only be true in class constructors that inherit from this class
  * 
- * Parameters will be checked for valid types
+ * Parameters will be checked for valid types if skipTypeCheck is false or empty
 */
 class Vector2 {
-	constructor(x, y) {
-		const expectedParameterTypes = [["number", "undefined", "null"], ["number", "undefined", "null"]];
-		ValidateParameterTypes(arguments, expectedParameterTypes);
+	constructor(x, y, skipTypeCheck = false) {
+		if (!skipTypeCheck) {
+			const expectedParameterTypes = [["number", "undefined", "null"], ["number", "undefined", "null"], "any"];
+			ValidateParameterTypes(arguments, expectedParameterTypes);
+		}
 
 		this.x = (x === undefined ? null : x); 
 		this.y = (y === undefined ? null : y); 
