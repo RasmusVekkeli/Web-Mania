@@ -3,7 +3,7 @@
  * 
  * Function parameters:
  * parameters: array of parameters of the function that needs checking
- * expectedParameterTypes: array of expected parameter types of the function that needs checking. See list of acceptable string in TypeOf.js. You can check for multiple types by nesting an array inside the array which contains the type strings for the single parameter
+ * expectedParameterTypes: array of expected parameter types of the function that needs checking. "any" string can be used if type doesn't matter. See list of acceptable string in TypeOf.js. You can check for multiple types by nesting an array inside the array which contains the type strings for the single parameter
  * 
  * Return value: none
  * 
@@ -13,16 +13,16 @@ function ValidateParameterTypes(parameters, expectedParameterTypes) {
 	for (let i = 0; i < expectedParameterTypes.length; i++) {
 		let isValid = false;
 
-		if (TypeOf(expectedParameterTypes[i] == "array")) {
+		if (TypeOf(expectedParameterTypes[i]) == "array") {
 			for (let j = 0; j < expectedParameterTypes[i].length; j++) {
-				if (TypeOf(parameters[i]) == expectedParameterTypes[i][j]) {
+				if (TypeOf(parameters[i]) == expectedParameterTypes[i][j] || expectedParameterTypes[i][j] == "any") {
 					isValid = true;
 					break;
 				}
 			}
 		}
 		else {
-			if (parameters[i] == expectedParameterTypes[i]) {
+			if (parameters[i] == expectedParameterTypes[i] || expectedParameterTypes[i] == "any") {
 				isValid = true;
 			}
 		}
