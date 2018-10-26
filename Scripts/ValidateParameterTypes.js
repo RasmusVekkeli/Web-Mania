@@ -3,7 +3,7 @@
  * 
  * Function parameters:
  * parameters: array of parameters of the function that needs checking
- * expectedParameterTypes: array of expected parameter types of the function that needs checking. "any" string can be used if type doesn't matter. See list of acceptable string in TypeOf.js. You can check for multiple types by nesting an array inside the array which contains the type strings for the single parameter
+ * expectedParameterTypes: array of expected parameter types of the function that needs checking. "any" string can be used if type doesn't matter. See list of acceptable strings in TypeOf.js. You can check for multiple types by nesting an array inside the array which contains the type strings for the single parameter
  * 
  * Return value: none
  * 
