@@ -31,7 +31,7 @@ function GenerateTypeErrorString(parameters, expectedParameterTypes) {
 		}
 	}
 
-	errorString += "; received";
+	errorString += ";\n Received";
 
 	for (let i = 0; i < parameters.length; i++) {
 		if (i != 0) {
