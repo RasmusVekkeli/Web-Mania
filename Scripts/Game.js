@@ -1,15 +1,13 @@
 /*
  * Class for managing game states and global varables needed by game objects
  * 
- * gameCanvas: HTMLElement-object for the game canvas
- * context: context-object for the game canvas
+ * context: context-object for the game canvas. The canvas element can be accessed using game.context.canvas
  * 
  * Constructor parameters:
  * none
 */
 class Game {
 	constructor() {
-		this.gameCanvas = document.getElementById("game_canvas");
-		this.context = this.gameCanvas.getContext("2d");
+		this.context = document.getElementById("game_canvas").getContext("2d");
 	}
 }
