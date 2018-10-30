@@ -33,6 +33,10 @@ function GenerateTypeErrorString(parameters, expectedParameterTypes) {
 
 	errorString += ";\n Received";
 
+	if (parameters.length == 0) {
+		errorString += " no parameters";
+	}
+
 	for (let i = 0; i < parameters.length; i++) {
 		if (i != 0) {
 			errorString += ",";
