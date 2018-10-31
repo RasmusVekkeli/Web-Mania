@@ -5,6 +5,10 @@
  * 
  * Constructor parameters:
  * none
+ * 
+ * getters:
+ * aspectRatio: Returns canvas aspect ratio as number
+ * inverseAspectRatio: Returns canvas inverse aspect ratio as number, might not be used
 */
 class Game {
 	constructor() {

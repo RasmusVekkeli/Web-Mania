@@ -1,6 +1,8 @@
 /*
  * Class for updating and rendering the background image
  * 
+ * Inherits from GameObject class
+ * 
  * imageObject: HTML image element which contains the image. The image should be loaded before passing it to the class.
  * pos: Rect object which stores the image's position and dimensions for rendering.
  * 
@@ -10,20 +12,21 @@
  * skipDraw: Sets the object to ignore Draw calls if true
  * skipTypeCheck: Skips parameter type validation if true. Should only be true in class constructors that inherit from this class
  * 
+ * 
+ * Functions:
+ * Update: This function does nothing. It is here to overwrite GameObject class's Update function to avoid unintended "not implemented" errors.
  * Update function parameters:
  * none
  * 
- * This function does nothing
  * 
+ * Draw: This function draws the background image if present and if skipDraw is not set to true
  * Draw function parameters:
  * none
  * 
- * This function draws the background image if present and if drawing is not skipped
  * 
+ * CalculateImageCoordinates: Calculates the centered image position and scaling for rendering and stores it in pos-property
  * CalculateImageCoordinates function parameters:
  * none
- * 
- * Calculates the centered image position and scaling for rendering and stores it in pos-property
 */
 class BGImage extends GameObject {
 	constructor(htmlImageElement, skipUpdate = false, skipDraw = false, skipTypeCheck = false) {
