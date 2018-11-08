@@ -43,7 +43,7 @@
  * FetchMetadataStringFromOsuFile parameters:
  * fileIndex: Index of the file in the directorySelector.files list
  * 
- * Return value: String which contains the entire Metadata section
+ * Return value: String which contains the entire Metadata section, or false if not found
  * 
  * 
  * FindFileInFileList: Finds specified file in the directorySelector.files array
@@ -122,7 +122,11 @@ class Game {
 				directoryStartIndex = i;
 				currentDirectory = this.TrimPathString(this.directorySelector.files[i].webkitRelativePath);
 			}
+
+			console.log(i + " files out of " + this.directorySelector.files.length + " processed");
 		}
+		console.log("List generation done!");
+		return;
 	}
 
 	FindOsuFile(directoryStart, directoryEnd) {
@@ -146,70 +150,78 @@ class Game {
 			//Get metadata string from the .osu file
 			let rawMetadataString = await this.FetchMetadataStringFromOsuFile(osuFileIndex);
 
-			//Get metadata and add to the song object
-			currentSong.title = rawMetadataString.match(/(?<=Title:).*/)[0];
-			currentSong.artist = rawMetadataString.match(/(?<=Artist:).*/)[0];
-			currentSong.author = rawMetadataString.match(/(?<=Creator:).*/)[0];
+			if (rawMetadataString !== false) {
+				//Get metadata and add to the song object
+				currentSong.title = rawMetadataString.match(/(?<=Title:).*/)[0];
+				currentSong.artist = rawMetadataString.match(/(?<=Artist:).*/)[0];
+				currentSong.author = rawMetadataString.match(/(?<=Creator:).*/)[0];
 
-			//Check validity of the .osu files in the directory
-			for (let i = directoryStart; i < directoryEnd; i++) {
-				if (this.directorySelector.files[i].webkitRelativePath.endsWith(".osu")) {
-					let reader = new FileReader();
-					let directorySelector = this.directorySelector;
+				//Check validity of the .osu files in the directory
+				for (let i = directoryStart; i < directoryEnd; i++) {
+					if (this.directorySelector.files[i].webkitRelativePath.endsWith(".osu")) {
+						let reader = new FileReader();
+						let directorySelector = this.directorySelector;
 
 
-					//Get file contents
-					let promise = new Promise(function (resolve, reject) {
-						reader.onload = function () { resolve() };
-						reader.onerror = function () { reject() };
+						//Get file contents
+						let promise = new Promise(function (resolve, reject) {
+							reader.onload = function () { resolve() };
+							reader.onerror = function () { reject() };
 
-						reader.readAsText(directorySelector.files[i]);
-					});
+							reader.readAsText(directorySelector.files[i]);
+						});
 
-					//Wait for file reader
-					await promise;
+						//Wait for file reader
+						await promise;
 
-					let rawOsuString = reader.result;
+						let rawOsuString = reader.result;
 
-					//Check if correct game mode
-					if (this.TrimLeadingSpaces(rawOsuString.match(/(?<=Mode:).*/)[0]) == 3) {
-						//Store possible matches
-						let audioFile = rawOsuString.match(/(?<=AudioFilename:).*/);
-						let bgImageFile = rawOsuString.match(/(?<=0,0,").*(?=",0,0)/);
+						let modeMatch = rawOsuString.match(/(?<=Mode:).*/);
 
-						//Check if match exists and find file index if true, assign to null if false
-						if (audioFile !== null) {
-							//Get index of the audio file
-							audioFile = this.FindFileInFilelist(this.TrimLeadingSpaces(audioFile[0]), directoryStart, directoryEnd);
+						//Make sure match was found
+						if (modeMatch !== null) {
+							//Check if correct game mode
+							if (this.TrimLeadingSpaces(modeMatch[0]) == 3) {
+								//Store possible matches
+								let audioFile = rawOsuString.match(/(?<=AudioFilename:).*/);
+								let bgImageFile = rawOsuString.match(/(?<=0,0,").*(?=",0,0)/);
 
-							//Check if filename was found and set it to null if not
-							if (audioFile === false) {
-								audioFile = null;
+								//Check if match exists and find file index if true, assign to null if false
+								if (audioFile !== null) {
+									//Get index of the audio file
+									audioFile = this.FindFileInFilelist(this.TrimLeadingSpaces(audioFile[0]), directoryStart, directoryEnd);
+
+									//Check if filename was found and set it to null if not
+									if (audioFile === false) {
+										audioFile = null;
+									}
+								}
+								else {
+									audioFile = null;
+								}
+
+								//Check if match exists and find file index if true, assign to null if false
+								if (bgImageFile !== null) {
+									//Get index of the background image file
+									bgImageFile = this.FindFileInFilelist(this.TrimLeadingSpaces(bgImageFile[0]), directoryStart, directoryEnd);
+
+									//Check if filename was found and set it to null if not
+									if (bgImageFile === false) {
+										bgImageFile = null;
+									}
+								}
+								else {
+									bgImageFile = null;
+								}
+
+								//Push to chartList
+								currentSong.chartList.push(new ChartFiles(i, audioFile, bgImageFile));
 							}
 						}
-						else {
-							audioFile = null;
-						}
-
-						//Check if match exists and find file index if true, assign to null if false
-						if (bgImageFile !== null) {
-							//Get index of the background image file
-							bgImageFile = this.FindFileInFilelist(this.TrimLeadingSpaces(bgImageFile[0]), directoryStart, directoryEnd);
-
-							//Check if filename was found and set it to null if not
-							if (bgImageFile === false) {
-								bgImageFile = null;
-							}
-						}
-						else {
-							bgImageFile = null;
-						}
-
-						//Push to chartList
-						currentSong.chartList.push(new ChartFiles(i, audioFile, bgImageFile));
 					}
 				}
 			}
+
 			//Make sure valid charts were found
 			if (currentSong.chartList.length > 0) {
 				return currentSong;
@@ -239,7 +251,14 @@ class Game {
 
 		//Returns the entire [Metadata] section as string from start to end
 		//What kind of language regular expressions even are? Elvish?
-		return reader.result.match(/\[Metadata\][\s\S]*?(?=[\r\n]\[)/)[0];
+		var result = reader.result.match(/\[Metadata\][\s\S]*?(?=[\r\n]\[)/);
+
+		if (result !== null) {
+			return result[0];
+		}
+		else {
+			return false;
+		}
 	}
 
 	FindFileInFilelist(file, startIndex, endIndex) {
