@@ -86,8 +86,6 @@ class Game {
 		//Note! Only seems to work on Chrome, Edge and Firefox!
 		this.directorySelector.webkitdirectory = true;
 
-		//this.directorySelector.addEventListener("change", this.GenerateSongList());
-
 		this.songList = [];
 	}
 
@@ -104,7 +102,7 @@ class Game {
 			this.songList = [];
 		}
 
-		let currentDirectory = null/*this.TrimPathString(this.directorySelector.files[0].webkitRelativePath)*/;
+		let currentDirectory = null;
 		let directoryStartIndex = null;
 
 		for (let i = 0; i < this.directorySelector.files.length; i++) {
