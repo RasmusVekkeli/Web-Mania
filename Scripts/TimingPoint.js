@@ -9,7 +9,7 @@
  * Functions:
  * msPerBeatToBPM: Returns bpm value from milliseconds per beat value
 */
-class TimingPoint{
+class TimingPoint {
 	constructor(time, bpm, signature = "4/4") {
 		this.time = time;
 		this.bpm = bpm;
