@@ -144,6 +144,7 @@ async function GenerateSongData(directoryStart, directoryEnd) {
 							//Store possible matches
 							let audioFile = rawOsuString.match(/(?<=AudioFilename:).*/);
 							let bgImageFile = rawOsuString.match(/(?<=0,0,").*(?=",0,0)/);
+							let chartName = rawOsuString.match(/(?<=Version:).*/);
 
 							//Check if match exists and find file index if true, assign to null if false
 							if (audioFile !== null) {
@@ -173,8 +174,16 @@ async function GenerateSongData(directoryStart, directoryEnd) {
 								bgImageFile = null;
 							}
 
+							//Check if match exists and store difficulty name if true, store empty string if false
+							if (chartName !== null) {
+								chartName = TrimLeadingSpaces(chartName[0]);
+							}
+							else {
+								chartName = "";
+							}
+
 							//Push to chartList
-							currentSong.chartList.push(new ChartFiles(i, audioFile, bgImageFile));
+							currentSong.chartList.push(new ChartFiles(i, audioFile, bgImageFile, chartName));
 						}
 					}
 				}
