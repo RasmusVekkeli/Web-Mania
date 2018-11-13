@@ -10,4 +10,8 @@ class ScrollSpeedPoint {
 		this.time = time;
 		this.scrollMult = scrollMult;
 	}
+
+	static NegativeValueToSpeedMult(value) {
+		return 100 / Math.abs(value);
+	}
 }
