@@ -3,6 +3,8 @@
  * 
  * context: Context-object for the game canvas. The canvas element can be accessed using this.context.canvas
  * directorySelector: Input HTML Element used to choose files. Note that this element won't be added to the document and is only accessed using JS.
+ * songList: Array of Song objects.
+ * currentChart: A Chart object, which represents the current playing chart
  * 
  * Constructor parameters:
  * none
@@ -25,6 +27,8 @@ class Game {
 		this.directorySelector.webkitdirectory = true;
 
 		this.songList = [];
+
+		this.currentChart = null;
 	}
 
 	get aspectRatio() {
