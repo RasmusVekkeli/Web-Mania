@@ -29,6 +29,8 @@ class Game {
 		this.songList = [];
 
 		this.currentChart = null;
+		this.currentAudio = null;
+		this.currentBG = null;
 	}
 
 	get aspectRatio() {
@@ -37,5 +39,67 @@ class Game {
 
 	get inverseAspectRatio() {
 		return this.context.canvas.height / this.context.canvas.width;
+	}
+
+	async LoadSong(songIndex, chartName) {
+		var chart = null;
+
+		for (let i = 0; i < game.songList[songIndex].chartList.length; i++) {
+			if (game.songList[songIndex].chartList[i].chartName == chartName) {
+				chart = game.songList[songIndex].chartList[i];
+				break;
+			}
+		}
+
+		if (chart === null) {
+			return false;
+		}
+
+		let object = this;
+
+		let chartPromise = Chart.ParseOsuFile(chart.dataIndex);
+
+		let bgPromise = new Promise(function (resolve, reject) {
+			URL.revokeObjectURL(object.currentBG);
+
+			if (chart.bgIndex !== null) {
+				let tempBg = new Image();
+
+				tempBg.onload = function () {
+					object.currentBG = tempBg;
+					resolve();
+				}
+
+				tempBg.src = URL.createObjectURL(game.directorySelector.files[chart.bgIndex]);
+			}
+			else {
+				object.currentBG = null;
+				resolve();
+			}
+		});
+
+		let audioPromise = new Promise(function (resolve, reject) {
+			URL.revokeObjectURL(object.currentAudio);
+
+			if (chart.audioIndex !== null) {
+				let tempAudio = new Audio();
+
+				//Because why would it be the same as above?
+				tempAudio.onloadeddata = function () {
+					object.currentAudio = tempAudio;
+					resolve();
+				}
+
+				tempAudio.src = URL.createObjectURL(game.directorySelector.files[chart.audioIndex]);
+			}
+			else {
+				object.currentAudio = null;
+				resolve();
+			}
+		});
+
+		await bgPromise;
+		await audioPromise;
+		this.currentChart = await chartPromise;
 	}
 }
