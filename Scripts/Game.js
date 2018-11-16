@@ -12,6 +12,15 @@
  * Getters:
  * aspectRatio: Returns canvas aspect ratio as number
  * inverseAspectRatio: Returns canvas inverse aspect ratio as number, might not be used 
+ * 
+ * Functions: 
+ * LoadSong: Loads files of a single chart into variables
+ * 
+ * Parameters: 
+ * songIndex: Index of a Song object in the songList array
+ * chartName: Name of the chart desired. 
+ * 
+ * Return value: false if loading fails, none otherwise.
 */
 class Game {
 	constructor() {
