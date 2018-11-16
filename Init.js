@@ -6,3 +6,5 @@ addEventListener("fullscreenchange", ReSize);
 
 //Create global game object
 var game = new Game();
+
+game.Start();
