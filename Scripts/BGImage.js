@@ -23,6 +23,9 @@
  * Draw function parameters:
  * none
  * 
+ * UpdateBGImage: This function updates imageObject from game.currentBG and recalculates dimensions based on the new image
+ * Parameters: none
+ * 
  * 
  * CalculateImageCoordinates: Calculates the centered image position and scaling for rendering and stores it in pos-property
  * CalculateImageCoordinates function parameters:
@@ -48,9 +51,16 @@ class BGImage extends GameObject {
 	}
 
 	Draw() {
-		if (!this.skipDraw) {
-			game.context.drawImage(this.imageObject, this.pos.x, this.pos.y, this.pos.w, this.pos.h);
+		if (this.imageObject !== null) {
+			if (!this.skipDraw) {
+				game.context.drawImage(this.imageObject, this.pos.x, this.pos.y, this.pos.w, this.pos.h);
+			}
 		}
+	}
+
+	UpdateBGImage() {
+		this.imageObject = game.currentBG;
+		this.CalculateImageCoordinates();
 	}
 
 	CalculateImageCoordinates() {
