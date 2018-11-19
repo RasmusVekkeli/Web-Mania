@@ -21,13 +21,25 @@ class Playfield extends GameObject {
 	Draw() {
 		if (!this.skipDraw) {
 			game.context.fillStyle = "rgba(0, 0, 0, 0.7)";
-			game.context.fillRect(this.pos.x, this.pos.y, this.pos.w, this.pos.h);
+			game.context.fillRect(this.pos.x, this.pos.y, this.width, this.pos.h);
+
+			game.context.fillStyle = "#FFFFFF";
+			game.context.fillRect(this.pos.x, 1080 - this.hitPosition, this.width, 10);
 
 			if (game.currentChart !== null) {
 				for (let i = 0; i < game.currentChart.noteList.length; i++) {
 					for (let j = game.currentChart.noteList[i].length - 1; j > 0; j--) {
-						game.context.fillStyle = "#FF0000";
-						game.context.fillRect(this.pos.x + this.laneWidth * i, 1080 - this.hitPosition + (game.currentPlayTime - game.currentChart.noteList[i][j].time) * this.scrollSpeedMult, this.laneWidth, 30);
+						let y = 1080 - this.hitPosition + (game.currentPlayTime - game.currentChart.noteList[i][j].time) * this.scrollSpeedMult;
+
+						if (game.currentChart.noteList[i][j].type == 1) {
+							game.context.fillStyle = "#FFFFFF";
+							game.context.fillRect(this.pos.x + this.laneWidth * i, y, this.laneWidth, 1080 - this.hitPosition + (game.currentPlayTime - game.currentChart.noteList[i][j + 1].time) * this.scrollSpeedMult - y);
+						}
+
+						if (game.currentChart.noteList[i][j].type != 2) {
+							game.context.fillStyle = "#FF0000";
+							game.context.fillRect(this.pos.x + this.laneWidth * i, y, this.laneWidth, 30);
+						}
 					}
 				}
 			}
