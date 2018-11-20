@@ -10,7 +10,7 @@ class Playfield extends GameObject {
 		this.snapColor;
 		this.centered;
 		this.pos = new Rect(this.centeredPosition, 0, this.laneWidth * this.keyCount, game.context.canvas.height);
-		this.downScroll = true;
+		this.downScroll = false;
 		this.scrollSpeedMult = 1;
 	}
 
@@ -24,16 +24,23 @@ class Playfield extends GameObject {
 			game.context.fillRect(this.pos.x, this.pos.y, this.width, this.pos.h);
 
 			game.context.fillStyle = "#FFFFFF";
-			game.context.fillRect(this.pos.x, 1080 - this.hitPosition, this.width, 10);
+
+			if (this.downScroll) {
+				game.context.fillRect(this.pos.x, game.context.canvas.height - this.hitPosition, this.width, 10);
+			}
+			else {
+				game.context.fillRect(this.pos.x, this.hitPosition, this.width, 10);
+			}
+			
 
 			if (game.currentChart !== null) {
 				for (let i = 0; i < game.currentChart.noteList.length; i++) {
 					for (let j = game.currentChart.noteList[i].length - 1; j > 0; j--) {
-						let y = 1080 - this.hitPosition + (game.currentPlayTime - game.currentChart.noteList[i][j].time) * this.scrollSpeedMult;
+						let y = this.CalculateY(game.currentChart.noteList[i][j]);
 
 						if (game.currentChart.noteList[i][j].type == 1) {
 							game.context.fillStyle = "#FFFFFF";
-							game.context.fillRect(this.pos.x + this.laneWidth * i, y, this.laneWidth, 1080 - this.hitPosition + (game.currentPlayTime - game.currentChart.noteList[i][j + 1].time) * this.scrollSpeedMult - y);
+							game.context.fillRect(this.pos.x + this.laneWidth * i, y, this.laneWidth, this.CalculateY(game.currentChart.noteList[i][j + 1]) - y);
 						}
 
 						if (game.currentChart.noteList[i][j].type != 2) {
@@ -52,5 +59,14 @@ class Playfield extends GameObject {
 
 	get width() {
 		return this.keyCount * this.laneWidth;
+	}
+
+	CalculateY(note) {
+		if (this.downScroll) {
+			return game.context.canvas.height - this.hitPosition + (game.currentPlayTime - note.time) * this.scrollSpeedMult;
+		}
+		else {
+			return this.hitPosition - (game.currentPlayTime - note.time) * this.scrollSpeedMult;
+		}
 	}
 }

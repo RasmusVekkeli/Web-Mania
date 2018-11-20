@@ -32,7 +32,7 @@ class Chart {
 				reader.onerror = function () { reject() };
 
 				reader.readAsText(game.directorySelector.files[fileIndex]);
-			})
+			});
 
 			await promise;
 
@@ -42,7 +42,7 @@ class Chart {
 
 			//Store possible matches of needed values
 			let previewMatch = rawChartString.match(/(?<=PreviewTime:).*/);
-			let nPlus1Match = rawChartString.match(/(?<=SpecialStyle:).*/)
+			let nPlus1Match = rawChartString.match(/(?<=SpecialStyle:).*/);
 			let keyCountMatch = rawChartString.match(/(?<=CircleSize:).*/); //Yes, it's circle size for some reason
 
 			//Assign values if matched
