@@ -19,6 +19,8 @@ class Chart {
 		this.scrollSpeedPoints = [];
 
 		this.noteList = [[]];
+
+		this.majorBPM;
 	}
 
 	static async ParseOsuFile(fileIndex) {
@@ -151,6 +153,8 @@ class Chart {
 		returnChart.scrollSpeedPoints.sort(function (a, b) { a.time - b.time });
 		returnChart.timingPoints.sort(function (a, b) { a.time - b.time });
 
+		returnChart.majorBPM = Chart.CalculateMajorBPM(returnChart.timingPoints, returnChart.firstNote, returnChart.lastNote);
+
 		return returnChart;
 	}
 
@@ -175,5 +179,97 @@ class Chart {
 		}
 
 		return false;
+	}
+
+	static CalculateMajorBPM(timingPoints, firstNote, lastNote) {
+		if (timingPoints.length == 1) {
+			return timingPoints[0].bpm;
+		}
+
+		var bpmLengths = [];
+
+		var firstPoint;
+		var lastPoint;
+
+		if (firstNote.time < timingPoints[0].time) {
+			firstPoint = 0;
+		}
+		else {
+			//Get first point
+			for (let i = 0; i < timingPoints.length; i++) {
+				if (timingPoints[i].time <= firstNote.time && timingPoints[i + 1] > firstNote.time) {
+					firstPoint = i;
+					break;
+				}
+			}
+		}
+
+		//Get last point
+		for (let i = timingPoints.length - 1; i > 0; i--) {
+			if (timingPoints[i].time < lastNote.time) {
+				lastPoint = i;
+				break;
+			}
+		}
+
+		bpmLengths.push({ bpm: timingPoints[firstPoint].bpm, length: firstNote.time - timingPoints[firstPoint + 1] });
+
+		if (bpmLengths[0].bpm == timingPoints[lastPoint].bpm) {
+			bpmLengths[0].length += lastNote.time - timingPoints[lastPoint].time;
+		}
+		else {
+			bpmLengths.push({ bpm: timingPoints[lastPoint].bpm, length: lastNote.time - timingPoints[lastPoint].time });
+		}
+
+		for (let i = firstPoint + 1; i < lastPoint; i++) {
+			let found = false;
+
+			for (let j = 0; j < bpmLengths.length; j++) {
+				if (bpmLengths[j].bpm == timingPoints[i].bpm) {
+					bpmLengths[j].length += timingPoints[i + 1].time - timingPoints[i].time;
+					found = true;
+				}
+			}
+
+			if (!found) {
+				bpmLengths.push({ bpm: timingPoints[i].bpm, length: timingPoints[i + 1].time - timingPoints[i].time });
+			}
+		}
+
+		let longestBPM;
+		let longestValue = 0;
+
+		for (let i = 0; i < bpmLengths.length; i++) {
+			if (bpmLengths[i].length > longestValue) {
+				longestValue = bpmLengths[i].length;
+				longestBPM = bpmLengths[i].bpm;
+			}
+		}
+
+		return longestBPM;
+	}
+
+	get firstNote() {
+		let earliestNote = new Note(Infinity, 0);
+
+		for (let i = 0; i < this.noteList.length; i++) {
+			if (this.noteList[i][0].time < earliestNote) {
+				earliestNote = this.noteList[i][0];
+			}
+		}
+
+		return earliestNote;
+	}
+
+	get lastNote() {
+		let latestNote = new Note(0, 0);
+
+		for (let i = 0; i < this.noteList.length; i++) {
+			if (this.noteList[i][this.noteList.length - 1].time > latestNote.time) {
+				latestNote = this.noteList[i][this.noteList.length - 1];
+			}
+		}
+
+		return latestNote
 	}
 }
