@@ -93,12 +93,36 @@ class Game {
 		return this.context.canvas.height / this.context.canvas.width;
 	}
 
-	Play() {
-		this.playStartTime = performance.now();
+	Play(rate = 1.0) {
+		//"this" won't work here either for some reason (or it might, i had an issue here earlier i fixed, haven't tested "this" yet)
+		console.log(game.currentChart);
 
-		if (this.currentAudio !== null) {
-			this.currentAudio.play();
+		for (let i = 0; i < game.currentChart.noteList.length; i++) {
+			for (let j = 0; j < game.currentChart.noteList[i].length; j++) {
+				game.currentChart.noteList[i][j].time = game.currentChart.noteList[i][j].time / rate;
+			}
 		}
+
+		for (let i = 0; i < game.currentChart.timingPoints.length; i++) {
+			game.currentChart.timingPoints[i].time /= rate;
+		}
+
+		for (let i = 0; i < game.currentChart.scrollSpeedPoints.length; i++) {
+			game.currentChart.scrollSpeedPoints[i].time /= rate;
+		}
+
+		game.currentAudio.playbackRate = rate;
+
+		game.playStartTime = performance.now();
+
+		if (game.currentAudio !== null) {
+			game.currentAudio.play();
+		}
+	}
+
+	async LoadAndPlay(songIndex, chartName, rate = 1.0) {
+		await this.LoadSong(songIndex, chartName);
+		this.Play(rate);
 	}
 
 	Update() {
