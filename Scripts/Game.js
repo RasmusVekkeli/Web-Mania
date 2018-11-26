@@ -83,6 +83,15 @@ class Game {
 		this.playStartTime = performance.now();
 
 		this.objects;
+
+		this.config = {
+			unsaved,
+			newUser,
+			playfieldLaneWidth,
+			playfieldHitPosition,
+			playfieldDownScroll,
+			playfieldScrollSpeedMult,
+		};
 	}
 
 	get aspectRatio() {
@@ -91,6 +100,62 @@ class Game {
 
 	get inverseAspectRatio() {
 		return this.context.canvas.height / this.context.canvas.width;
+	}
+
+	LoadConfiguration() {
+		this.config.unsaved = false;
+
+		if (localStorage.getItem("newUser") !== undefined) {
+			this.config.newUser = false;
+		}
+		else {
+			this.config.newUser = true;
+			this.config.unsaved = true;
+		}
+
+		if (localStorage.getItem("playfieldLaneWidth") !== undefined) {
+			this.config.playfieldLaneWidth = Number(localStorage.getItem("playfieldLaneWidth"));
+		}
+		else {
+			this.config.playfieldLaneWidth = 128;
+			this.config.unsaved = true;
+		}
+
+		if (localStorage.getItem("playfieldHitPosition") !== undefined) {
+			this.config.playfieldHitPosition = Number(localStorage.getItem("playfieldHitPosition"));
+		}
+		else {
+			this.config.playfieldHitPosition = 200;
+			this.config.unsaved = true;
+		}
+
+		if (localStorage.getItem("playfieldDownScroll") !== undefined) {
+			this.config.playfieldDownScroll = Number(localStorage.getItem("playfieldDownScroll"));
+		}
+		else {
+			this.config.playfieldDownScroll = true;
+			this.config.unsaved = true;
+		}
+
+		if (localStorage.getItem("playfieldScrollSpeedMult") !== undefined) {
+			this.config.playfieldScrollSpeedMult = Number(localStorage.getItem("playfieldScrollSpeedMult"));
+		}
+		else {
+			this.config.playfieldScrollSpeedMult = 1;
+			this.config.unsaved = true;
+		}
+	}
+
+	SaveConfiguration() {
+		if (this.config.unsaved) {
+			localStorage.setItem("newUser", "false");
+			localStorage.setItem("playfieldLaneWidth", String(this.config.playfieldLaneWidth));
+			localStorage.setItem("playfieldHitPosition", String(this.config.playfieldHitPosition));
+			localStorage.setItem("playfieldDownScroll", String(this.config.playfieldDownScroll));
+			localStorage.setItem("playfieldScrollSpeedMult", String(this.config.playfieldScrollSpeedMult));
+
+			this.config.unsaved = false;
+		}
 	}
 
 	Play(rate = 1.0) {
