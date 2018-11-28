@@ -118,6 +118,8 @@ class Game {
 	}
 
 	LoadConfiguration() {
+		this.config = {};
+
 		this.config.unsaved = false;
 
 		if (localStorage.getItem("newUser") !== null) {
@@ -175,6 +177,27 @@ class Game {
 			this.config.playfieldSpecialLaneLeft = this.defaultConfig.playfieldSpecialLaneLeft;
 			this.config.unsaved = true;
 		}
+
+		this.config.keys = [];
+
+		for (let i = 0; i < this.defaultConfig.keys.length; i++) {
+			console.log("keys" + i);
+
+			if (localStorage.getItem("keys" + i) !== null) {
+				let tempString = localStorage.getItem("keys" + i);
+
+				this.config.keys[i] = [];
+
+				while (tempString.indexOf(",") != -1) {
+					this.config.keys[i].push(tempString.substr(0, tempString.indexOf(",")));
+					tempString = tempString.substr(tempString.indexOf(",") + 1);
+				}
+			}
+			else {
+				this.config.keys[i] = this.defaultConfig.keys[i].slice(0);
+				this.config.unsaved = true;
+			}
+		}
 	}
 
 	SaveConfiguration() {
@@ -184,6 +207,17 @@ class Game {
 			localStorage.setItem("playfieldHitPosition", String(this.config.playfieldHitPosition));
 			localStorage.setItem("playfieldDownScroll", String(this.config.playfieldDownScroll));
 			localStorage.setItem("playfieldScrollSpeedMult", String(this.config.playfieldScrollSpeedMult));
+
+			//Store key strings
+			for (let i = 0; i < this.defaultConfig.keys.length; i++) {
+				let tempString = "";
+
+				for (let j = 0; j < this.defaultConfig.keys[i].length; j++) {
+					tempString += this.config.keys[i][j] + ",";
+				}
+
+				localStorage.setItem("keys" + i, tempString);
+			}
 
 			this.config.unsaved = false;
 		}
