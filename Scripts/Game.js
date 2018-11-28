@@ -84,13 +84,28 @@ class Game {
 
 		this.objects;
 
-		this.config = {
-			unsaved,
-			newUser,
-			playfieldLaneWidth,
-			playfieldHitPosition,
-			playfieldDownScroll,
-			playfieldScrollSpeedMult,
+		this.config = {};
+		this.defaultConfig = {
+			newUser: true,
+			playfieldLaneWidth: 128,
+			playfieldHitPosition: 200,
+			playfieldDownScroll: true,
+			playfieldScrollSpeedMult: 1,
+			playfieldSpecialLane: true,
+			playfieldSpecialLaneLeft: true,
+
+			keys: [
+				[],
+				["Space"],
+				["KeyX", "KeyM"],
+				["KeyX", "Space", "KeyM"],
+				["KeyZ", "KeyX", "KeyM", "Comma"],
+				["KeyZ", "KeyX", "Space", "KeyM", "Comma"],
+				["KeyZ", "KeyX", "KeyC", "KeyN", "KeyM", "Comma"],
+				["KeyZ", "KeyX", "KeyC", "Space", "KeyN", "KeyM", "Comma"],
+				["KeyZ", "KeyX", "KeyC", "ShiftLeft", "Space", "KeyN", "KeyM", "Comma"],
+				["KeyZ", "KeyX", "KeyC", "KeyV", "Space", "KeyB", "KeyN", "KeyM", "Comma"]
+			],
 		};
 	}
 
@@ -105,43 +120,59 @@ class Game {
 	LoadConfiguration() {
 		this.config.unsaved = false;
 
-		if (localStorage.getItem("newUser") !== undefined) {
+		if (localStorage.getItem("newUser") !== null) {
 			this.config.newUser = false;
 		}
 		else {
-			this.config.newUser = true;
+			this.config.newUser = this.defaultConfig.newUser;
 			this.config.unsaved = true;
 		}
 
-		if (localStorage.getItem("playfieldLaneWidth") !== undefined) {
+		if (localStorage.getItem("playfieldLaneWidth") !== null) {
 			this.config.playfieldLaneWidth = Number(localStorage.getItem("playfieldLaneWidth"));
 		}
 		else {
-			this.config.playfieldLaneWidth = 128;
+			this.config.playfieldLaneWidth = this.defaultConfig.playfieldLaneWidth;
 			this.config.unsaved = true;
 		}
 
-		if (localStorage.getItem("playfieldHitPosition") !== undefined) {
+		if (localStorage.getItem("playfieldHitPosition") !== null) {
 			this.config.playfieldHitPosition = Number(localStorage.getItem("playfieldHitPosition"));
 		}
 		else {
-			this.config.playfieldHitPosition = 200;
+			this.config.playfieldHitPosition = this.defaultConfig.playfieldHitPosition;
 			this.config.unsaved = true;
 		}
 
-		if (localStorage.getItem("playfieldDownScroll") !== undefined) {
+		if (localStorage.getItem("playfieldDownScroll") !== null) {
 			this.config.playfieldDownScroll = Number(localStorage.getItem("playfieldDownScroll"));
 		}
 		else {
-			this.config.playfieldDownScroll = true;
+			this.config.playfieldDownScroll = this.defaultConfig.playfieldDownScroll;
 			this.config.unsaved = true;
 		}
 
-		if (localStorage.getItem("playfieldScrollSpeedMult") !== undefined) {
+		if (localStorage.getItem("playfieldScrollSpeedMult") !== null) {
 			this.config.playfieldScrollSpeedMult = Number(localStorage.getItem("playfieldScrollSpeedMult"));
 		}
 		else {
-			this.config.playfieldScrollSpeedMult = 1;
+			this.config.playfieldScrollSpeedMult = this.defaultConfig.playfieldScrollSpeedMult;
+			this.config.unsaved = true;
+		}
+
+		if (localStorage.getItem("playfieldSpecialLane") !== null) {
+			this.config.playfieldSpecialLane = Boolean(localStorage.getItem("playfieldSpecialLane"));
+		}
+		else {
+			this.config.playfieldSpecialLane = this.defaultConfig.playfieldSpecialLane;
+			this.config.unsaved = true;
+		}
+
+		if (localStorage.getItem("playfieldSpecialLaneLeft") !== null) {
+			this.config.playfieldSpecialLaneLeft = Boolean(localStorage.getItem("playfieldSpecialLaneLeft"));
+		}
+		else {
+			this.config.playfieldSpecialLaneLeft = this.defaultConfig.playfieldSpecialLaneLeft;
 			this.config.unsaved = true;
 		}
 	}
