@@ -207,6 +207,8 @@ class Game {
 			localStorage.setItem("playfieldHitPosition", String(this.config.playfieldHitPosition));
 			localStorage.setItem("playfieldDownScroll", String(this.config.playfieldDownScroll));
 			localStorage.setItem("playfieldScrollSpeedMult", String(this.config.playfieldScrollSpeedMult));
+			localStorage.setItem("playfieldSpecialLane", String(this.config.playfieldSpecialLane));
+			localStorage.setItem("playfieldSpecialLaneLeft", String(this.config.playfieldSpecialLaneLeft));
 
 			//Store key strings
 			for (let i = 0; i < this.defaultConfig.keys.length; i++) {
