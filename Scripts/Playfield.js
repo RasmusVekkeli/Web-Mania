@@ -45,7 +45,7 @@ class Playfield extends GameObject {
 
 						if (game.currentChart.noteList[i][j].type != 2) {
 							game.context.fillStyle = "#FF0000";
-							game.context.fillRect(this.pos.x + this.laneWidth * i, y, this.laneWidth, 30);
+							game.context.fillRect(this.pos.x + this.laneWidth * i, y, this.laneWidth, this.downScroll ? -30 : 30);
 						}
 					}
 				}
