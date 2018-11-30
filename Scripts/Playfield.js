@@ -29,13 +29,13 @@ class Playfield extends GameObject {
 				game.context.fillRect(this.pos.x, game.context.canvas.height - this.hitPosition, this.width, 10);
 			}
 			else {
-				game.context.fillRect(this.pos.x, this.hitPosition, this.width, 10);
+				game.context.fillRect(this.pos.x, this.hitPosition, this.width, -10);
 			}
 			
 
 			if (game.currentChart !== null) {
 				for (let i = 0; i < game.currentChart.noteList.length; i++) {
-					for (let j = game.currentChart.noteList[i].length - 1; j > 0; j--) {
+					for (let j = game.currentChart.noteList[i].length - 1; j >= 0; j--) {
 						let y = this.CalculateY(game.currentChart.noteList[i][j]);
 
 						if (game.currentChart.noteList[i][j].type == 1) {
