@@ -10,7 +10,7 @@ class Playfield extends GameObject {
 		this.snapColor;
 		this.centered;
 		this.pos = new Rect(this.centeredPosition, 0, this.laneWidth * this.keyCount, game.context.canvas.height);
-		this.downScroll = false;
+		this.downScroll = true;
 		this.scrollSpeedMult = 1;
 	}
 
@@ -68,5 +68,20 @@ class Playfield extends GameObject {
 		else {
 			return this.hitPosition - (game.currentPlayTime - note.time) * this.scrollSpeedMult;
 		}
+	}
+
+	ReloadPlayfieldParameters() {
+		if (game.currentChart !== null) {
+			this.keyCount = game.currentChart.keyCount;
+		}
+		
+		this.laneWidth = game.config.laneWidth;
+		this.hitPosition = game.config.hitPosition;
+		this.type = 0;
+		this.snapColor = false;
+		this.centered = true;
+		this.pos = new Rect(this.centeredPosition, 0, this.laneWidth * this.keyCount, game.context.canvas.height);
+		this.downScroll = game.config.downScroll;
+		this.scrollSpeedMult = game.config.scrollSpeedMult;
 	}
 }
