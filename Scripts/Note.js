@@ -7,7 +7,7 @@
  * 
  * Type table:
  * normal: 0
- * long note start: 1
+ * longNoteStart: 1
  * longNoteEnd: 2
 */
 class Note {
