@@ -80,9 +80,13 @@ class Game {
 		this.currentAudio = null;
 		this.currentBG = null;
 
+		this.currentScore = [[]];
+
 		this.playStartTime = performance.now();
 
 		this.objects;
+
+		this.lastJudgement = this.hitWindows.marvelous;
 
 		this.config = {};
 		this.defaultConfig = {
@@ -107,6 +111,14 @@ class Game {
 				["KeyZ", "KeyX", "KeyC", "KeyV", "Space", "KeyB", "KeyN", "KeyM", "Comma"]
 			],
 		};
+
+		this.hitWindows = {
+			marvelous: { hitWindow: 20, accValue: 100, judgeText: "Marvelous!!" },
+			perfect: { hitWindow: 40, accValue: 100, judgeText: "Perfect!" },
+			ok: { hitWindow: 60, accValue: 50, judgeText: "OK" },
+			bad: { hitWindow: 80, accValue: 0, judgeText: "Bad" },
+			miss: { hitWindow: 100, accValue: -20, judgeText: "Miss" }
+		}
 	}
 
 	get aspectRatio() {
@@ -115,6 +127,95 @@ class Game {
 
 	get inverseAspectRatio() {
 		return this.context.canvas.height / this.context.canvas.width;
+	}
+
+	HandleKeyDown(e) {
+		switch (e.code) {
+			default:
+				if (game.currentChart !== null) {
+					for (let i = 0; i < game.config.keys[game.currentChart.keyCount].length; i++) {
+						if (e.code == game.config.keys[game.currentChart.keyCount][i]) {
+							game.Judge(i);
+							break;
+						}
+					}
+				}
+				break;
+		}
+	}
+
+	HandleKeyUp(e) {
+		switch (e.code) {
+			default:
+				if (game.currentChart !== null) {
+					for (let i = 0; i < game.config.keys[game.currentChart.keyCount].length; i++) {
+						if (e.code == game.config.keys[game.currentChart.keyCount][i]) {
+							game.JudgeLNEnd(i);
+							break;
+						}
+					}
+				}
+				break;
+		}
+	}
+
+	Judge(lane) {
+		if (game.currentChart.noteList[lane].length > game.currentScore[lane].length) {
+			if (game.currentChart.noteList[lane][game.currentScore[lane].length].type !== 2) {
+				let hitError = Math.abs(game.currentChart.noteList[lane][game.currentScore[lane].length].time - game.currentPlayTime);
+
+				if (hitError < game.hitWindows.miss.hitWindow) {
+					if (hitError < game.hitWindows.marvelous.hitWindow) {
+						game.currentScore[lane].push(game.hitWindows.marvelous.accValue);
+						game.lastJudgement = game.hitWindows.marvelous;
+					}
+					else if (hitError < game.hitWindows.perfect.hitWindow) {
+						game.currentScore[lane].push(game.hitWindows.perfect.accValue);
+						game.lastJudgement = game.hitWindows.perfect;
+					}
+					else if (hitError < game.hitWindows.ok.hitWindow) {
+						game.currentScore[lane].push(game.hitWindows.ok.accValue);
+						game.lastJudgement = game.hitWindows.ok;
+					}
+					else if (hitError < game.hitWindows.bad.hitWindow) {
+						game.currentScore[lane].push(game.hitWindows.bad.accValue);
+						game.lastJudgement = game.hitWindows.bad;
+					}
+					else {
+						game.currentScore[lane].push(game.hitWindows.miss.accValue);
+						game.lastJudgement = game.hitWindows.miss;
+
+						if (game.currentChart.noteList[lane][game.currentScore[lane].length].type === 2) {
+							game.currentScore[lane].push(game.hitWindows.miss.accValue);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	JudgeLNEnd(lane) {
+		if (game.currentChart.noteList[lane].length > game.currentScore[lane].length) {
+			if (game.currentChart.noteList[lane][game.currentScore[lane].length].type === 2) {
+				let hitError = Math.abs(game.currentChart.noteList[lane][game.currentScore[lane].length].time - game.currentPlayTime);
+
+				if (hitError < game.hitWindows.marvelous.hitWindow) {
+					game.currentScore[lane].push(game.hitWindows.marvelous.accValue);
+				}
+				else if (hitError < game.hitWindows.perfect.hitWindow) {
+					game.currentScore[lane].push(game.hitWindows.perfect.accValue);
+				}
+				else if (hitError < game.hitWindows.ok.hitWindow) {
+					game.currentScore[lane].push(game.hitWindows.ok.accValue);
+				}
+				else if (hitError < game.hitWindows.bad.hitWindow) {
+					game.currentScore[lane].push(game.hitWindows.bad.accValue);
+				}
+				else {
+					game.currentScore[lane].push(game.hitWindows.miss.accValue);
+				}
+			}
+		}
 	}
 
 	LoadConfiguration() {
@@ -181,8 +282,6 @@ class Game {
 		this.config.keys = [];
 
 		for (let i = 0; i < this.defaultConfig.keys.length; i++) {
-			console.log("keys" + i);
-
 			if (localStorage.getItem("keys" + i) !== null) {
 				let tempString = localStorage.getItem("keys" + i);
 
@@ -227,8 +326,6 @@ class Game {
 
 	Play(rate = 1.0) {
 		//"this" won't work here either for some reason (or it might, i had an issue here earlier i fixed, haven't tested "this" yet)
-		console.log(game.currentChart);
-
 		for (let i = 0; i < game.currentChart.noteList.length; i++) {
 			for (let j = 0; j < game.currentChart.noteList[i].length; j++) {
 				game.currentChart.noteList[i][j].time = game.currentChart.noteList[i][j].time / rate;
@@ -243,7 +340,14 @@ class Game {
 			game.currentChart.scrollSpeedPoints[i].time /= rate;
 		}
 
+		game.currentScore = [];
+
+		for (let i = 0; i < game.currentChart.keyCount; i++) {
+			game.currentScore.push([]);
+		}
+
 		game.currentAudio.playbackRate = rate;
+		game.currentAudio.currentTime = 0;
 
 		game.playStartTime = performance.now();
 
@@ -260,6 +364,16 @@ class Game {
 	Update() {
 		this.currentPlayTime = performance.now() - this.playStartTime;
 
+		if (this.currentChart !== null) {
+			for (let i = 0; i < this.currentChart.keyCount; i++) {
+				if (this.currentChart.noteList[i].length > this.currentScore[i].length) {
+					if (this.currentChart.noteList[i][this.currentScore[i].length].time < this.currentPlayTime - this.hitWindows.miss.hitWindow) {
+						this.currentScore[i].push(this.hitWindows.miss.accValue);
+					}
+				}
+			}
+		}
+		
 		for (let i = 0; i < this.objects.length; i++) {
 			this.objects[i].Update();
 		}
@@ -285,6 +399,11 @@ class Game {
 			new Playfield(),
 		];
 
+		this.LoadConfiguration();
+
+		addEventListener("keydown", this.HandleKeyDown);
+		addEventListener("keyup", this.HandleKeyUp);
+
 		this.tickInterval = setInterval(this.Tick);
 	}
 
@@ -299,6 +418,7 @@ class Game {
 		}
 
 		if (chart === null) {
+			console.warn("No chart named " + chartName + " was found in song " + songIndex);
 			return false;
 		}
 
@@ -350,5 +470,11 @@ class Game {
 		this.currentChart = await chartPromise;
 
 		this.objects[0].UpdateBGImage();
+
+		game.currentScore = [];
+
+		for (let i = 0; i < game.currentChart.keyCount; i++) {
+			game.currentScore.push([]);
+		}
 	}
 }
