@@ -153,7 +153,7 @@ class Chart {
 		returnChart.scrollSpeedPoints.sort(function (a, b) { a.time - b.time });
 		returnChart.timingPoints.sort(function (a, b) { a.time - b.time });
 
-		returnChart.majorBPM = Chart.CalculateMajorBPM(returnChart.timingPoints, returnChart.firstNote, returnChart.lastNote);
+		//returnChart.majorBPM = Chart.CalculateMajorBPM(returnChart.timingPoints, returnChart.firstNote, returnChart.lastNote);
 
 		return returnChart;
 	}
