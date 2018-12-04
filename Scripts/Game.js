@@ -86,8 +86,6 @@ class Game {
 
 		this.objects;
 
-		this.lastJudgement = this.hitWindows.marvelous;
-
 		this.config = {};
 		this.defaultConfig = {
 			newUser: true,
@@ -119,6 +117,8 @@ class Game {
 			bad: { hitWindow: 80, accValue: 0, judgeText: "Bad" },
 			miss: { hitWindow: 100, accValue: -20, judgeText: "Miss" }
 		}
+
+		this.lastJudgement = this.hitWindows.marvelous;
 	}
 
 	get aspectRatio() {
@@ -201,18 +201,23 @@ class Game {
 
 				if (hitError < game.hitWindows.marvelous.hitWindow) {
 					game.currentScore[lane].push(game.hitWindows.marvelous.accValue);
+					game.lastJudgement = game.hitWindows.marvelous;
 				}
 				else if (hitError < game.hitWindows.perfect.hitWindow) {
 					game.currentScore[lane].push(game.hitWindows.perfect.accValue);
+					game.lastJudgement = game.hitWindows.perfect;
 				}
 				else if (hitError < game.hitWindows.ok.hitWindow) {
 					game.currentScore[lane].push(game.hitWindows.ok.accValue);
+					game.lastJudgement = game.hitWindows.ok;
 				}
 				else if (hitError < game.hitWindows.bad.hitWindow) {
 					game.currentScore[lane].push(game.hitWindows.bad.accValue);
+					game.lastJudgement = game.hitWindows.bad;
 				}
 				else {
 					game.currentScore[lane].push(game.hitWindows.miss.accValue);
+					game.lastJudgement = game.hitWindows.miss;
 				}
 			}
 		}
@@ -369,6 +374,7 @@ class Game {
 				if (this.currentChart.noteList[i].length > this.currentScore[i].length) {
 					if (this.currentChart.noteList[i][this.currentScore[i].length].time < this.currentPlayTime - this.hitWindows.miss.hitWindow) {
 						this.currentScore[i].push(this.hitWindows.miss.accValue);
+						this.lastJudgement = this.hitWindows.miss;
 					}
 				}
 			}

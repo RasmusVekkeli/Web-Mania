@@ -20,9 +20,11 @@ class Playfield extends GameObject {
 
 	Draw() {
 		if (!this.skipDraw) {
+			//Draw playfield bg
 			game.context.fillStyle = "rgba(0, 0, 0, 0.7)";
 			game.context.fillRect(this.pos.x, this.pos.y, this.width, this.pos.h);
 
+			//Draw playfield judgement line
 			game.context.fillStyle = "#FFFFFF";
 
 			if (this.downScroll) {
@@ -32,24 +34,43 @@ class Playfield extends GameObject {
 				game.context.fillRect(this.pos.x, this.hitPosition, this.width, -10);
 			}
 			
-
+			//Draw playfield notes
 			if (game.currentChart !== null) {
 				for (let i = 0; i < game.currentChart.noteList.length; i++) {
 					for (let j = game.currentChart.noteList[i].length - 1; j >= 0; j--) {
-						let y = this.CalculateY(game.currentChart.noteList[i][j]);
+						let y;
 
+						//Check if long note head was hit, but not released. Draw on hitposition if true
 						if (game.currentChart.noteList[i][j].type == 1) {
+							if ((game.currentScore[i][j] != -20 && game.currentScore[i][j] !== undefined) && game.currentScore[i][j + 1] === undefined) {
+								y = this.downScroll ? game.context.canvas.height - this.hitPosition : this.hitPosition;
+							}
+							else {
+								y = this.CalculateY(game.currentChart.noteList[i][j]);
+							}
+
+							//Draw long note bodies
 							game.context.fillStyle = "#FFFFFF";
 							game.context.fillRect(this.pos.x + this.laneWidth * i, y, this.laneWidth, this.CalculateY(game.currentChart.noteList[i][j + 1]) - y);
 						}
+						else {
+							y = this.CalculateY(game.currentChart.noteList[i][j]);
+						} 
 
+						//Draw other notes
 						if (game.currentChart.noteList[i][j].type != 2) {
-							game.context.fillStyle = "#FF0000";
-							game.context.fillRect(this.pos.x + this.laneWidth * i, y, this.laneWidth, this.downScroll ? -30 : 30);
+							if (game.currentScore[i][j] === undefined || game.currentScore[i][j] === game.hitWindows.miss.accValue) {
+								game.context.fillStyle = "#FF0000";
+								game.context.fillRect(this.pos.x + this.laneWidth * i, y, this.laneWidth, this.downScroll ? -30 : 30);
+							}
 						}
 					}
 				}
 			}
+
+			game.context.fillStyle = "#FFFFFF";
+			game.context.font = "100px Arial";
+			game.context.fillText(game.lastJudgement.judgeText, 700, 500);
 		}
 	}
 
