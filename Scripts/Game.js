@@ -80,7 +80,10 @@ class Game {
 		this.currentAudio = null;
 		this.currentBG = null;
 
+		this.judgeOffset = 60;
+
 		this.currentScore = [[]];
+		this.currentCombo = 0;
 
 		this.playStartTime = performance.now();
 
@@ -162,28 +165,33 @@ class Game {
 	Judge(lane) {
 		if (game.currentChart.noteList[lane].length > game.currentScore[lane].length) {
 			if (game.currentChart.noteList[lane][game.currentScore[lane].length].type !== 2) {
-				let hitError = Math.abs(game.currentChart.noteList[lane][game.currentScore[lane].length].time - game.currentPlayTime);
+				let hitError = Math.abs(game.currentChart.noteList[lane][game.currentScore[lane].length].time - game.currentPlayTime + game.judgeOffset);
 
 				if (hitError < game.hitWindows.miss.hitWindow) {
 					if (hitError < game.hitWindows.marvelous.hitWindow) {
 						game.currentScore[lane].push(game.hitWindows.marvelous.accValue);
 						game.lastJudgement = game.hitWindows.marvelous;
+						game.currentCombo++;
 					}
 					else if (hitError < game.hitWindows.perfect.hitWindow) {
 						game.currentScore[lane].push(game.hitWindows.perfect.accValue);
 						game.lastJudgement = game.hitWindows.perfect;
+						game.currentCombo++;
 					}
 					else if (hitError < game.hitWindows.ok.hitWindow) {
 						game.currentScore[lane].push(game.hitWindows.ok.accValue);
 						game.lastJudgement = game.hitWindows.ok;
+						game.currentCombo++;
 					}
 					else if (hitError < game.hitWindows.bad.hitWindow) {
 						game.currentScore[lane].push(game.hitWindows.bad.accValue);
 						game.lastJudgement = game.hitWindows.bad;
+						game.currentCombo++;
 					}
 					else {
 						game.currentScore[lane].push(game.hitWindows.miss.accValue);
 						game.lastJudgement = game.hitWindows.miss;
+						game.currentCombo = 0;
 
 						if (game.currentChart.noteList[lane][game.currentScore[lane].length].type === 2) {
 							game.currentScore[lane].push(game.hitWindows.miss.accValue);
@@ -197,27 +205,32 @@ class Game {
 	JudgeLNEnd(lane) {
 		if (game.currentChart.noteList[lane].length > game.currentScore[lane].length) {
 			if (game.currentChart.noteList[lane][game.currentScore[lane].length].type === 2) {
-				let hitError = Math.abs(game.currentChart.noteList[lane][game.currentScore[lane].length].time - game.currentPlayTime);
+				let hitError = Math.abs(game.currentChart.noteList[lane][game.currentScore[lane].length].time - game.currentPlayTime + game.judgeOffset);
 
 				if (hitError < game.hitWindows.marvelous.hitWindow) {
 					game.currentScore[lane].push(game.hitWindows.marvelous.accValue);
 					game.lastJudgement = game.hitWindows.marvelous;
+					game.currentCombo++;
 				}
 				else if (hitError < game.hitWindows.perfect.hitWindow) {
 					game.currentScore[lane].push(game.hitWindows.perfect.accValue);
 					game.lastJudgement = game.hitWindows.perfect;
+					game.currentCombo++;
 				}
 				else if (hitError < game.hitWindows.ok.hitWindow) {
 					game.currentScore[lane].push(game.hitWindows.ok.accValue);
 					game.lastJudgement = game.hitWindows.ok;
+					game.currentCombo++;
 				}
 				else if (hitError < game.hitWindows.bad.hitWindow) {
 					game.currentScore[lane].push(game.hitWindows.bad.accValue);
 					game.lastJudgement = game.hitWindows.bad;
+					game.currentCombo++;
 				}
 				else {
 					game.currentScore[lane].push(game.hitWindows.miss.accValue);
 					game.lastJudgement = game.hitWindows.miss;
+					game.currentCombo = 0;
 				}
 			}
 		}
@@ -351,6 +364,8 @@ class Game {
 			game.currentScore.push([]);
 		}
 
+		game.currentCombo = 0;
+
 		game.currentAudio.playbackRate = rate;
 		game.currentAudio.currentTime = 0;
 
@@ -375,6 +390,7 @@ class Game {
 					if (this.currentChart.noteList[i][this.currentScore[i].length].time < this.currentPlayTime - this.hitWindows.miss.hitWindow) {
 						this.currentScore[i].push(this.hitWindows.miss.accValue);
 						this.lastJudgement = this.hitWindows.miss;
+						this.currentCombo = 0;
 					}
 				}
 			}
