@@ -42,16 +42,18 @@ class Playfield extends GameObject {
 
 						//Check if long note head was hit, but not released. Draw on hitposition if true
 						if (game.currentChart.noteList[i][j].type == 1) {
-							if ((game.currentScore[i][j] != -20 && game.currentScore[i][j] !== undefined) && game.currentScore[i][j + 1] === undefined) {
+							if ((game.currentScore[i][j] != game.hitWindows.miss.accValue && game.currentScore[i][j] !== undefined) && game.currentScore[i][j + 1] === undefined) {
 								y = this.downScroll ? game.context.canvas.height - this.hitPosition : this.hitPosition;
 							}
 							else {
 								y = this.CalculateY(game.currentChart.noteList[i][j]);
 							}
 
-							//Draw long note bodies
-							game.context.fillStyle = "#FFFFFF";
-							game.context.fillRect(this.pos.x + this.laneWidth * i, y, this.laneWidth, this.CalculateY(game.currentChart.noteList[i][j + 1]) - y);
+							if (game.currentScore[i][j] === undefined) {
+								//Draw long note bodies
+								game.context.fillStyle = "#FFFFFF";
+								game.context.fillRect(this.pos.x + this.laneWidth * i, y, this.laneWidth, this.CalculateY(game.currentChart.noteList[i][j + 1]) - y);
+							}
 						}
 						else {
 							y = this.CalculateY(game.currentChart.noteList[i][j]);

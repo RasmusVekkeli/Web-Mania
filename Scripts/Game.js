@@ -87,7 +87,7 @@ class Game {
 
 		this.playStartTime = performance.now();
 
-		this.objects;
+		this.objectLayers;
 
 		this.config = {};
 		this.defaultConfig = {
@@ -396,16 +396,16 @@ class Game {
 			}
 		}
 		
-		for (let i = 0; i < this.objects.length; i++) {
-			this.objects[i].Update();
+		for (let i = 0; i < this.objectLayers.length; i++) {
+			this.objectLayers[i].Update();
 		}
 	}
 
 	Draw() {
 		this.context.clearRect(0, 0, this.context.canvas.width, this.context.canvas.height);
 
-		for (let i = 0; i < this.objects.length; i++) {
-			this.objects[i].Draw();
+		for (let i = 0; i < this.objectLayers.length; i++) {
+			this.objectLayers[i].Draw();
 		}
 	}
 
@@ -416,10 +416,13 @@ class Game {
 	}
 
 	Start() {
-		this.objects = [
-			new BGImage(null, false, false, true),
-			new Playfield(),
+		this.objectLayers = [
+			new Layer("bgLayer", [new BGImage(null, false, false, true)]),
+			new Layer("playfieldLayer", [new Playfield()]),
 		];
+
+		this.bgImage = this.objectLayers[0].objectList[0];
+		this.playfield = this.objectLayers[1].objectList[0];
 
 		this.LoadConfiguration();
 
@@ -491,7 +494,7 @@ class Game {
 		await audioPromise;
 		this.currentChart = await chartPromise;
 
-		this.objects[0].UpdateBGImage();
+		this.bgImage.UpdateBGImage();
 
 		game.currentScore = [];
 
