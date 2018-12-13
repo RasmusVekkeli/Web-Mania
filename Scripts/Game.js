@@ -80,7 +80,15 @@ class Game {
 		this.currentAudio = null;
 		this.currentBG = null;
 
-		this.judgeOffset = 60;
+		this.judgeOffset = 20;
+		this.showFPS = true;
+
+		this.deltaTime = 0;
+		this.lastTime = 0;
+
+		this.lastFPS = 0;
+		this.FPScounter = 0;
+		this.nextFPSUpdate = 0;
 
 		this.currentScore = [[]];
 		this.currentCombo = 0;
@@ -130,6 +138,11 @@ class Game {
 
 	get inverseAspectRatio() {
 		return this.context.canvas.height / this.context.canvas.width;
+	}
+
+	UpdateFPS() {
+		this.lastFPS = this.FPScounter;
+		this.FPScounter = 0;
 	}
 
 	HandleKeyDown(e) {
@@ -384,6 +397,9 @@ class Game {
 	Update() {
 		this.currentPlayTime = performance.now() - this.playStartTime;
 
+		this.deltaTime = performance.now() - this.lastTime;
+		this.lastTime = performance.now();
+
 		if (this.currentChart !== null) {
 			for (let i = 0; i < this.currentChart.keyCount; i++) {
 				if (this.currentChart.noteList[i].length > this.currentScore[i].length) {
@@ -399,6 +415,11 @@ class Game {
 		for (let i = 0; i < this.objectLayers.length; i++) {
 			this.objectLayers[i].Update();
 		}
+
+		if (this.nextFPSUpdate * 1000 < performance.now()) {
+			this.UpdateFPS();
+			this.nextFPSUpdate++;
+		}
 	}
 
 	Draw() {
@@ -407,6 +428,13 @@ class Game {
 		for (let i = 0; i < this.objectLayers.length; i++) {
 			this.objectLayers[i].Draw();
 		}
+
+		if (this.showFPS) {
+			this.context.font = "60px Arial";
+			this.context.fillText(this.lastFPS, 10, 70);
+		}
+
+		this.FPScounter++;
 	}
 
 	Tick() {
@@ -419,6 +447,7 @@ class Game {
 		this.objectLayers = [
 			new Layer("bgLayer", [new BGImage(null, false, false, true)]),
 			new Layer("playfieldLayer", [new Playfield()]),
+			new Layer("playUILayer"),
 		];
 
 		this.bgImage = this.objectLayers[0].objectList[0];
