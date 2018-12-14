@@ -80,7 +80,7 @@ class Game {
 		this.currentAudio = null;
 		this.currentBG = null;
 
-		this.judgeOffset = 20;
+		this.judgeOffset = 0;
 		this.showFPS = true;
 
 		this.deltaTime = 0;
@@ -143,6 +143,7 @@ class Game {
 	UpdateFPS() {
 		this.lastFPS = this.FPScounter;
 		this.FPScounter = 0;
+		this.fpsText.text = this.lastFPS;
 	}
 
 	HandleKeyDown(e) {
@@ -416,6 +417,7 @@ class Game {
 			this.objectLayers[i].Update();
 		}
 
+		//Update FPS of last second
 		if (this.nextFPSUpdate * 1000 < performance.now()) {
 			this.UpdateFPS();
 			this.nextFPSUpdate++;
@@ -429,11 +431,7 @@ class Game {
 			this.objectLayers[i].Draw();
 		}
 
-		if (this.showFPS) {
-			this.context.font = "60px Arial";
-			this.context.fillText(this.lastFPS, 10, 70);
-		}
-
+		//Increment FPS counter
 		this.FPScounter++;
 	}
 
@@ -447,11 +445,15 @@ class Game {
 		this.objectLayers = [
 			new Layer("bgLayer", [new BGImage(null, false, false, true)]),
 			new Layer("playfieldLayer", [new Playfield()]),
-			new Layer("playUILayer"),
+			new Layer("playfieldUILayer"),
+			new Layer("debugUILayer", [new UIText("", 10, 10, -1, -1, 30, "Arial")]),
 		];
 
-		this.bgImage = this.objectLayers[0].objectList[0];
-		this.playfield = this.objectLayers[1].objectList[0];
+		//Set up easier to access references to objects
+		this.bgImage = this.GetLayerByName("bgLayer").objectList[0];
+		this.playfield = this.GetLayerByName("playfieldLayer").objectList[0];
+
+		this.fpsText = this.GetLayerByName("debugUILayer").objectList[0];
 
 		this.LoadConfiguration();
 
@@ -459,6 +461,16 @@ class Game {
 		addEventListener("keyup", this.HandleKeyUp);
 
 		this.tickInterval = setInterval(this.Tick);
+	}
+
+	GetLayerByName(name) {
+		for (let i = 0; i < this.objectLayers.length; i++) {
+			if (this.objectLayers[i].name == name) {
+				return this.objectLayers[i];
+			}
+		}
+
+		return false;
 	}
 
 	async LoadSong(songIndex, chartName) {
