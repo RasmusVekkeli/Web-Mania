@@ -80,8 +80,6 @@ class BGImage extends GameObject {
 
 				this.pos.y = (game.context.canvas.height - this.pos.h) / 2;
 				this.pos.x = 0;
-
-				console.log(this.pos.h.toString() + " " + game.context.canvas.height);
 			}
 		}
 	}
