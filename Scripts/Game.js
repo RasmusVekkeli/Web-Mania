@@ -91,6 +91,7 @@ class Game {
 		 * 2: Generating song list
 		 * 3: Song selection menu
 		 * 4: In game
+		 * 5: Results
 		*/
 
 		this.deltaTime = 0;
@@ -404,13 +405,7 @@ class Game {
 	}
 
 	Stop() {
-		setTimeout(function () {
-			if (game.currentAudio !== null) {
-				game.currentAudio.pause();
-			}
-
-			game.state = 3;
-		}, 3000);
+		game.state = 5;
 	}
 
 	async LoadAndPlay(songIndex, chartName, rate = 1.0) {
@@ -426,19 +421,15 @@ class Game {
 
 		if (this.state === 4) {
 			for (let i = 0; i < this.currentChart.keyCount; i++) {
-				let isDone = true;
-
 				if (this.currentChart.noteList[i].length > this.currentScore[i].length) {
 					if (this.currentChart.noteList[i][this.currentScore[i].length].time < this.currentPlayTime - this.hitWindows.miss.hitWindow) {
 						this.currentScore[i].push(this.hitWindows.miss.accValue);
 						this.lastJudgement = this.hitWindows.miss;
 						this.currentCombo = 0;
 					}
-
-					isDone = false;
 				}
 
-				if (isDone) {
+				if (this.currentChart.lastNote.time < this.currentPlayTime + 3000) {
 					this.Stop();
 				}
 			}

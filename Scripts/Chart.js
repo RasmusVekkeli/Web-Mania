@@ -265,8 +265,8 @@ class Chart {
 		let latestNote = new Note(0, 0);
 
 		for (let i = 0; i < this.noteList.length; i++) {
-			if (this.noteList[i][this.noteList.length - 1].time > latestNote.time) {
-				latestNote = this.noteList[i][this.noteList.length - 1];
+			if (this.noteList[i][this.noteList[i].length - 1].time > latestNote.time) {
+				latestNote = this.noteList[i][this.noteList[i].length - 1];
 			}
 		}
 
