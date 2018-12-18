@@ -429,7 +429,7 @@ class Game {
 					}
 				}
 
-				if (this.currentChart.lastNote.time < this.currentPlayTime + 3000) {
+				if (this.currentChart.lastNote.time < this.currentPlayTime - 3000) {
 					this.Stop();
 				}
 			}
