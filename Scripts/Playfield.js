@@ -73,7 +73,7 @@ class Playfield extends GameObject {
 			game.context.fillStyle = "#FFFFFF";
 			game.context.font = "80px Arial";
 			//Judgement
-			game.context.fillText(game.lastJudgement.judgeText, this.centeredPosition + (this.width - game.context.measureText(game.lastJudgement.judgeText).width) / 2, 500);
+			//game.context.fillText(game.lastJudgement.judgeText, this.centeredPosition + (this.width - game.context.measureText(game.lastJudgement.judgeText).width) / 2, 500);
 			//Combo
 			game.context.fillText(game.currentCombo.toString(), this.centeredPosition + (this.width - game.context.measureText(game.currentCombo.toString()).width) / 2, 300);
 		}

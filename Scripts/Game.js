@@ -221,6 +221,8 @@ class Game {
 							game.currentScore[lane].push(game.hitWindows.miss.accValue);
 						}
 					}
+
+					game.judgementText.Animate();
 				}
 			}
 		}
@@ -474,13 +476,15 @@ class Game {
 		this.objectLayers = [
 			new Layer("bgLayer", [new BGImage(null, false, false, true)]),
 			new Layer("playfieldLayer", [new Playfield()]),
-			new Layer("playfieldUILayer"),
+			new Layer("playfieldUILayer", [new JudgementText()]),
 			new Layer("debugUILayer", [new UIText("", 10, 10, -1, -1, 30, "Arial")]),
 		];
 
 		//Set up easier to access references to objects
 		this.bgImage = this.GetLayerByName("bgLayer").objectList[0];
 		this.playfield = this.GetLayerByName("playfieldLayer").objectList[0];
+
+		this.judgementText = this.GetLayerByName("playfieldUILayer").objectList[0];
 
 		this.fpsText = this.GetLayerByName("debugUILayer").objectList[0];
 
@@ -489,6 +493,7 @@ class Game {
 		addEventListener("keydown", this.HandleKeyDown);
 		addEventListener("keyup", this.HandleKeyUp);
 
+		//Intervals are unfortunately capped at 4 ms (250 intervals per second). There seems to be no workarounds for this
 		this.tickInterval = setInterval(this.Tick);
 	}
 
