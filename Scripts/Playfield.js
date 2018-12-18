@@ -6,6 +6,7 @@ class Playfield extends GameObject {
 		this.keyCount = 4;
 		this.laneWidth = 128;
 		this.hitPosition = 200;
+		this.barnoteHeight = 30;
 		this.type;
 		this.snapColor;
 		this.centered;
@@ -63,7 +64,7 @@ class Playfield extends GameObject {
 						if (game.currentChart.noteList[i][j].type != 2) {
 							if (game.currentScore[i][j] === undefined || game.currentScore[i][j] === game.hitWindows.miss.accValue) {
 								game.context.fillStyle = "#FF0000";
-								game.context.fillRect(this.pos.x + this.laneWidth * i, y, this.laneWidth, this.downScroll ? -30 : 30);
+								game.context.fillRect(this.pos.x + this.laneWidth * i, y, this.laneWidth, this.downScroll ? -this.barnoteHeight : this.barnoteHeight);
 							}
 						}
 					}
@@ -72,8 +73,6 @@ class Playfield extends GameObject {
 
 			game.context.fillStyle = "#FFFFFF";
 			game.context.font = "80px Arial";
-			//Judgement
-			//game.context.fillText(game.lastJudgement.judgeText, this.centeredPosition + (this.width - game.context.measureText(game.lastJudgement.judgeText).width) / 2, 500);
 			//Combo
 			game.context.fillText(game.currentCombo.toString(), this.centeredPosition + (this.width - game.context.measureText(game.currentCombo.toString()).width) / 2, 300);
 		}
