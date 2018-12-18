@@ -5,14 +5,14 @@ class Playfield extends GameObject {
 		//Most of these should be rewritten to get the values from some config class
 		this.keyCount = 4;
 		this.laneWidth = 128;
-		this.hitPosition = 200;
+		this.hitPosition = 160;
 		this.barnoteHeight = 30;
 		this.type;
 		this.snapColor;
 		this.centered;
 		this.pos = new Rect(this.centeredPosition, 0, this.laneWidth * this.keyCount, game.context.canvas.height);
 		this.downScroll = true;
-		this.scrollSpeedMult = 1;
+		this.scrollSpeedMult = 2.3;
 	}
 
 	Update() {
@@ -29,10 +29,10 @@ class Playfield extends GameObject {
 			game.context.fillStyle = "#FFFFFF";
 
 			if (this.downScroll) {
-				game.context.fillRect(this.pos.x, game.context.canvas.height - this.hitPosition, this.width, 10);
+				game.context.fillRect(this.pos.x, game.context.canvas.height - this.hitPosition, this.width, 2);
 			}
 			else {
-				game.context.fillRect(this.pos.x, this.hitPosition, this.width, -10);
+				game.context.fillRect(this.pos.x, this.hitPosition, this.width, -2);
 			}
 			
 			//Draw playfield notes
@@ -41,31 +41,39 @@ class Playfield extends GameObject {
 					for (let j = game.currentChart.noteList[i].length - 1; j >= 0; j--) {
 						let y;
 
-						//Check if long note head was hit, but not released. Draw on hitposition if true
-						if (game.currentChart.noteList[i][j].type == 1) {
-							if ((game.currentScore[i][j] != game.hitWindows.miss.accValue && game.currentScore[i][j] !== undefined) && game.currentScore[i][j + 1] === undefined) {
-								y = this.downScroll ? game.context.canvas.height - this.hitPosition : this.hitPosition;
-							}
-							else {
-								y = this.CalculateY(game.currentChart.noteList[i][j]);
-							}
+						switch (game.currentChart.noteList[i][j].type) {
+							case 0: //Normal note
+								if (game.currentScore[i][j] === undefined || game.currentScore[i][j] === game.hitWindows.miss.accValue) {
+									y = this.CalculateY(game.currentChart.noteList[i][j]);
 
-							if (game.currentScore[i][j] === undefined) {
-								//Draw long note bodies
-								game.context.fillStyle = "#FFFFFF";
-								game.context.fillRect(this.pos.x + this.laneWidth * i, y, this.laneWidth, this.CalculateY(game.currentChart.noteList[i][j + 1]) - y);
-							}
-						}
-						else {
-							y = this.CalculateY(game.currentChart.noteList[i][j]);
-						} 
+									game.context.fillStyle = "#FF0000";
+									game.context.fillRect(this.pos.x + this.laneWidth * i, y, this.laneWidth, this.downScroll ? -this.barnoteHeight : this.barnoteHeight);
+								}
 
-						//Draw other notes
-						if (game.currentChart.noteList[i][j].type != 2) {
-							if (game.currentScore[i][j] === undefined || game.currentScore[i][j] === game.hitWindows.miss.accValue) {
-								game.context.fillStyle = "#FF0000";
-								game.context.fillRect(this.pos.x + this.laneWidth * i, y, this.laneWidth, this.downScroll ? -this.barnoteHeight : this.barnoteHeight);
-							}
+								break;
+
+							case 1: //Long note
+								if (game.currentScore[i][j] !== game.hitWindows.miss.accValue && game.currentScore[i][j + 1] === undefined) {
+									y = game.currentScore[i][j] === undefined ? this.CalculateY(game.currentChart.noteList[i][j]) : this.hitPositionY;
+									let endY;
+
+									if (game.currentChart.noteList[i][j + 1].time < game.currentPlayTime) {
+										endY = y;
+									}
+									else {
+										endY = this.CalculateY(game.currentChart.noteList[i][j + 1]);
+									}
+
+									//Long note body
+									game.context.fillStyle = "#FFFFFF";
+									game.context.fillRect(this.pos.x + this.laneWidth * i, y, this.laneWidth, endY - y);
+
+									//Long note head
+									game.context.fillStyle = "#FF0000";
+									game.context.fillRect(this.pos.x + this.laneWidth * i, y, this.laneWidth, this.downScroll ? -this.barnoteHeight : this.barnoteHeight);
+								}
+
+								break;
 						}
 					}
 				}
@@ -84,6 +92,10 @@ class Playfield extends GameObject {
 
 	get width() {
 		return this.keyCount * this.laneWidth;
+	}
+
+	get hitPositionY() {
+		return this.downScroll ? game.context.canvas.height - this.hitPosition : this.hitPosition;
 	}
 
 	CalculateY(note) {
