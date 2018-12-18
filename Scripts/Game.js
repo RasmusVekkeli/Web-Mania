@@ -83,6 +83,16 @@ class Game {
 		this.judgeOffset = 0;
 		this.showFPS = true;
 
+		this.state = 0;
+		/*
+		 * States:
+		 * 0: Initial State
+		 * 1: Waiting for browser to generate file list
+		 * 2: Generating song list
+		 * 3: Song selection menu
+		 * 4: In game
+		*/
+
 		this.deltaTime = 0;
 		this.lastTime = 0;
 
@@ -149,7 +159,7 @@ class Game {
 	HandleKeyDown(e) {
 		switch (e.code) {
 			default:
-				if (game.currentChart !== null) {
+				if (game.state === 4) {
 					for (let i = 0; i < game.config.keys[game.currentChart.keyCount].length; i++) {
 						if (e.code == game.config.keys[game.currentChart.keyCount][i]) {
 							game.Judge(i);
@@ -164,7 +174,7 @@ class Game {
 	HandleKeyUp(e) {
 		switch (e.code) {
 			default:
-				if (game.currentChart !== null) {
+				if (game.state === 4) {
 					for (let i = 0; i < game.config.keys[game.currentChart.keyCount].length; i++) {
 						if (e.code == game.config.keys[game.currentChart.keyCount][i]) {
 							game.JudgeLNEnd(i);
@@ -383,11 +393,22 @@ class Game {
 		game.currentAudio.playbackRate = rate;
 		game.currentAudio.currentTime = 0;
 
+		game.state = 4;
 		game.playStartTime = performance.now();
 
 		if (game.currentAudio !== null) {
 			game.currentAudio.play();
 		}
+	}
+
+	Stop() {
+		setTimeout(function () {
+			if (game.currentAudio !== null) {
+				game.currentAudio.pause();
+			}
+
+			game.state = 3;
+		}, 3000);
 	}
 
 	async LoadAndPlay(songIndex, chartName, rate = 1.0) {
@@ -401,14 +422,22 @@ class Game {
 		this.deltaTime = performance.now() - this.lastTime;
 		this.lastTime = performance.now();
 
-		if (this.currentChart !== null) {
+		if (this.state === 4) {
 			for (let i = 0; i < this.currentChart.keyCount; i++) {
+				let isDone = true;
+
 				if (this.currentChart.noteList[i].length > this.currentScore[i].length) {
 					if (this.currentChart.noteList[i][this.currentScore[i].length].time < this.currentPlayTime - this.hitWindows.miss.hitWindow) {
 						this.currentScore[i].push(this.hitWindows.miss.accValue);
 						this.lastJudgement = this.hitWindows.miss;
 						this.currentCombo = 0;
 					}
+
+					isDone = false;
+				}
+
+				if (isDone) {
+					this.Stop();
 				}
 			}
 		}

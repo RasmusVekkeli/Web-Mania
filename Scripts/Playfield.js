@@ -35,7 +35,7 @@ class Playfield extends GameObject {
 			}
 			
 			//Draw playfield notes
-			if (game.currentChart !== null) {
+			if (game.state === 4) {
 				for (let i = 0; i < game.currentChart.noteList.length; i++) {
 					for (let j = game.currentChart.noteList[i].length - 1; j >= 0; j--) {
 						let y;
