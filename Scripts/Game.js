@@ -80,6 +80,8 @@ class Game {
 		this.currentAudio = null;
 		this.currentBG = null;
 
+		this.currentTimingSection = 0;
+
 		this.judgeOffset = 0;
 		this.showFPS = true;
 
@@ -149,6 +151,22 @@ class Game {
 
 	get inverseAspectRatio() {
 		return this.context.canvas.height / this.context.canvas.width;
+	}
+
+	get beatT() {
+		let mspb = 60000 / this.currentChart.timingPoints[this.currentTimingSection].bpm;
+
+		let t = (this.currentPlayTime - this.currentChart.timingPoints[this.currentTimingSection].time) % mspb / mspb;
+
+		if (t < 0) {
+			t = 0;
+		}
+
+		if (t > 1) {
+			t = 1; 
+		}
+
+		return t;
 	}
 
 	UpdateFPS() {
@@ -409,6 +427,8 @@ class Game {
 		game.state = 4;
 		game.playStartTime = performance.now();
 
+		game.currentTimingSection = 0;
+
 		if (game.currentAudio !== null) {
 			game.currentAudio.play();
 		}
@@ -443,8 +463,19 @@ class Game {
 					this.Stop();
 				}
 			}
+
+			while (this.currentTimingSection < this.currentChart.timingPoints.length - 1) {
+				if (this.currentChart.timingPoints[this.currentTimingSection + 1].time < this.currentPlayTime) {
+					this.currentTimingSection++;
+					console.log(this.currentTimingSection);
+				}
+				else {
+					break;
+				}
+			}
 		}
-		
+
+		//Updates!!////////////////////////////////////////////////////
 		for (let i = 0; i < this.objectLayers.length; i++) {
 			this.objectLayers[i].Update();
 		}

@@ -15,23 +15,22 @@ class Playfield extends GameObject {
 		this.scrollSpeedMult = 2.3;
 
 		this.beatLineHeight = 30;
-		this.beatLineGradient = game.context.createLinearGradient(0, this.beatLineHeight, 0, 0);
-		this.beatLineGradient.addColorStop(0, "rgba(0, 0, 0, 0)");
-		this.beatLineGradient.addColorStop(1, "#FFFFFF");
-
-		this.time = performance.now();
-
-		this.animationStart = 0;
-		this.animationLength = 60;
+		this.beatLineColor = "#FFFFFF";
 	}
 
 	Update() {
-		this.time = performance.now();
+		if (game.state === 4) {
+			let adjustedT = game.beatT * 2;
 
-		this.beatLineGradient = game.context.createLinearGradient(0, this.beatLineHeight, 0, 0);
+			if (adjustedT > 1) {
+				adjustedT = 0.9999; //Because if both gradient stops are 0 it turns into solid color of white instead of transparent (in my case) for some reason. Blame the web API guys, not me.
+			}
 
-		this.beatLineGradient.addColorStop(0, "rgba(0, 0, 0, 0)");
-		this.beatLineGradient.addColorStop(1 - this.t, "#FFFFFF");
+			this.beatLineGradient = game.context.createLinearGradient(0, this.hitPositionY, 0, this.hitPositionY + (this.downScroll ? -this.beatLineHeight : this.beatLineHeight));
+
+			this.beatLineGradient.addColorStop(1 - adjustedT, "rgba(0, 0, 0, 0)");
+			this.beatLineGradient.addColorStop(0, this.beatLineColor);
+		}
 	}
 
 	Draw() {
@@ -43,6 +42,10 @@ class Playfield extends GameObject {
 			//Draw playfield judgement line
 			game.context.fillStyle = "#FFFFFF";
 			game.context.fillRect(this.pos.x, this.hitPositionY, this.width, this.downScroll ? 2 : -2);
+
+			//Draw beatline
+			game.context.fillStyle = this.beatLineGradient;
+			game.context.fillRect(this.pos.x, this.hitPositionY, this.width, this.downScroll ? -this.beatLineHeight : this.beatLineHeight);
 			
 			//Draw playfield notes
 			if (game.state === 4) {
@@ -87,11 +90,6 @@ class Playfield extends GameObject {
 					}
 				}
 			}
-
-			//game.context.fillStyle = "#FFFFFF";
-			//game.context.font = "80px Arial";
-			////Combo
-			//game.context.fillText(game.currentCombo.toString(), this.centeredPosition + (this.width - game.context.measureText(game.currentCombo.toString()).width) / 2, 300);
 		}
 	}
 
@@ -105,20 +103,6 @@ class Playfield extends GameObject {
 
 	get hitPositionY() {
 		return this.downScroll ? game.context.canvas.height - this.hitPosition : this.hitPosition;
-	}
-
-	get t() {
-		let t = (this.time - this.animationStart) / this.animationLength;
-
-		if (t < 0) {
-			t = 0;
-		}
-
-		if (t > 1) {
-			t = 1;
-		}
-
-		return t;
 	}
 
 	CalculateY(note) {
