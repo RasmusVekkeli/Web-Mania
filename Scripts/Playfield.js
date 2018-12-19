@@ -13,10 +13,25 @@ class Playfield extends GameObject {
 		this.pos = new Rect(this.centeredPosition, 0, this.laneWidth * this.keyCount, game.context.canvas.height);
 		this.downScroll = true;
 		this.scrollSpeedMult = 2.3;
+
+		this.beatLineHeight = 30;
+		this.beatLineGradient = game.context.createLinearGradient(0, this.beatLineHeight, 0, 0);
+		this.beatLineGradient.addColorStop(0, "rgba(0, 0, 0, 0)");
+		this.beatLineGradient.addColorStop(1, "#FFFFFF");
+
+		this.time = performance.now();
+
+		this.animationStart = 0;
+		this.animationLength = 60;
 	}
 
 	Update() {
+		this.time = performance.now();
 
+		this.beatLineGradient = game.context.createLinearGradient(0, this.beatLineHeight, 0, 0);
+
+		this.beatLineGradient.addColorStop(0, "rgba(0, 0, 0, 0)");
+		this.beatLineGradient.addColorStop(1 - this.t, "#FFFFFF");
 	}
 
 	Draw() {
@@ -27,13 +42,7 @@ class Playfield extends GameObject {
 
 			//Draw playfield judgement line
 			game.context.fillStyle = "#FFFFFF";
-
-			if (this.downScroll) {
-				game.context.fillRect(this.pos.x, game.context.canvas.height - this.hitPosition, this.width, 2);
-			}
-			else {
-				game.context.fillRect(this.pos.x, this.hitPosition, this.width, -2);
-			}
+			game.context.fillRect(this.pos.x, this.hitPositionY, this.width, this.downScroll ? 2 : -2);
 			
 			//Draw playfield notes
 			if (game.state === 4) {
@@ -96,6 +105,20 @@ class Playfield extends GameObject {
 
 	get hitPositionY() {
 		return this.downScroll ? game.context.canvas.height - this.hitPosition : this.hitPosition;
+	}
+
+	get t() {
+		let t = (this.time - this.animationStart) / this.animationLength;
+
+		if (t < 0) {
+			t = 0;
+		}
+
+		if (t > 1) {
+			t = 1;
+		}
+
+		return t;
 	}
 
 	CalculateY(note) {
