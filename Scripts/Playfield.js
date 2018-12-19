@@ -79,10 +79,10 @@ class Playfield extends GameObject {
 				}
 			}
 
-			game.context.fillStyle = "#FFFFFF";
-			game.context.font = "80px Arial";
-			//Combo
-			game.context.fillText(game.currentCombo.toString(), this.centeredPosition + (this.width - game.context.measureText(game.currentCombo.toString()).width) / 2, 300);
+			//game.context.fillStyle = "#FFFFFF";
+			//game.context.font = "80px Arial";
+			////Combo
+			//game.context.fillText(game.currentCombo.toString(), this.centeredPosition + (this.width - game.context.measureText(game.currentCombo.toString()).width) / 2, 300);
 		}
 	}
 

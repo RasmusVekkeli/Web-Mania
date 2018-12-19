@@ -159,6 +159,11 @@ class Game {
 
 	HandleKeyDown(e) {
 		switch (e.code) {
+			case "Enter":
+				game.Play();
+
+				break;
+
 			default:
 				if (game.state === 4) {
 					for (let i = 0; i < game.config.keys[game.currentChart.keyCount].length; i++) {
@@ -467,7 +472,7 @@ class Game {
 		this.objectLayers = [
 			new Layer("bgLayer", [new BGImage(null, false, false, true)]),
 			new Layer("playfieldLayer", [new Playfield()]),
-			new Layer("playfieldUILayer", [new JudgementText()]),
+			new Layer("playfieldUILayer", [new JudgementText(), new Combo()]),
 			new Layer("debugUILayer", [new UIText("", 10, 10, -1, -1, 30, "Arial")]),
 		];
 
@@ -476,6 +481,7 @@ class Game {
 		this.playfield = this.GetLayerByName("playfieldLayer").objectList[0];
 
 		this.judgementText = this.GetLayerByName("playfieldUILayer").objectList[0];
+		this.comboText = this.GetLayerByName("playfieldUILayer").objectList[1];
 
 		this.fpsText = this.GetLayerByName("debugUILayer").objectList[0];
 

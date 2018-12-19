@@ -1,6 +1,6 @@
 class JudgementText extends UIText{
 	constructor() {
-		super("", 0, 500, 0, 0, 60, "Arial");
+		super("", 0, 640, 0, 0, 60, "Arial");
 
 		this.animationStart = 0;
 		this.animationLength = 60;
@@ -9,6 +9,8 @@ class JudgementText extends UIText{
 		this.largeSize = 70;
 
 		this.time = performance.now();
+
+		this.textStyle = "#FFFFFF";
 	}
 
 	Animate() {
