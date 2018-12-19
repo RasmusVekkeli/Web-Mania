@@ -157,6 +157,11 @@ class Game {
 		this.fpsText.text = this.lastFPS;
 	}
 
+	IncrementCombo() {
+		this.currentCombo++;
+		this.comboText.Animate();
+	}
+
 	HandleKeyDown(e) {
 		switch (e.code) {
 			case "Enter":
@@ -201,22 +206,22 @@ class Game {
 					if (hitError < game.hitWindows.marvelous.hitWindow) {
 						game.currentScore[lane].push(game.hitWindows.marvelous.accValue);
 						game.lastJudgement = game.hitWindows.marvelous;
-						game.currentCombo++;
+						game.IncrementCombo();
 					}
 					else if (hitError < game.hitWindows.perfect.hitWindow) {
 						game.currentScore[lane].push(game.hitWindows.perfect.accValue);
 						game.lastJudgement = game.hitWindows.perfect;
-						game.currentCombo++;
+						game.IncrementCombo();
 					}
 					else if (hitError < game.hitWindows.ok.hitWindow) {
 						game.currentScore[lane].push(game.hitWindows.ok.accValue);
 						game.lastJudgement = game.hitWindows.ok;
-						game.currentCombo++;
+						game.IncrementCombo();
 					}
 					else if (hitError < game.hitWindows.bad.hitWindow) {
 						game.currentScore[lane].push(game.hitWindows.bad.accValue);
 						game.lastJudgement = game.hitWindows.bad;
-						game.currentCombo++;
+						game.IncrementCombo();
 					}
 					else {
 						game.currentScore[lane].push(game.hitWindows.miss.accValue);
@@ -242,22 +247,22 @@ class Game {
 				if (hitError < game.hitWindows.marvelous.hitWindow) {
 					game.currentScore[lane].push(game.hitWindows.marvelous.accValue);
 					game.lastJudgement = game.hitWindows.marvelous;
-					game.currentCombo++;
+					game.IncrementCombo();
 				}
 				else if (hitError < game.hitWindows.perfect.hitWindow) {
 					game.currentScore[lane].push(game.hitWindows.perfect.accValue);
 					game.lastJudgement = game.hitWindows.perfect;
-					game.currentCombo++;
+					game.IncrementCombo();
 				}
 				else if (hitError < game.hitWindows.ok.hitWindow) {
 					game.currentScore[lane].push(game.hitWindows.ok.accValue);
 					game.lastJudgement = game.hitWindows.ok;
-					game.currentCombo++;
+					game.IncrementCombo();
 				}
 				else if (hitError < game.hitWindows.bad.hitWindow) {
 					game.currentScore[lane].push(game.hitWindows.bad.accValue);
 					game.lastJudgement = game.hitWindows.bad;
-					game.currentCombo++;
+					game.IncrementCombo();
 				}
 				else {
 					game.currentScore[lane].push(game.hitWindows.miss.accValue);
