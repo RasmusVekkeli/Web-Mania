@@ -11,20 +11,20 @@ class UIText extends GameObject{
 	}
 
 	Draw() {
-		if (this.anchor.x < 0) {
+		if (this.anchor.y < 0) {
 			game.context.textBaseline = "top";
 		}
-		else if (this.anchor.x > 0) {
+		else if (this.anchor.y > 0) {
 			game.context.textBaseline = "bottom";
 		}
 		else {
 			game.context.textBaseline = "middle";
 		}
 
-		if (this.anchor.y < 0) {
+		if (this.anchor.x < 0) {
 			game.context.textAlign = "left";
 		}
-		else if (this.anchor.y > 0) {
+		else if (this.anchor.x > 0) {
 			game.context.textAlign = "right";
 		}
 		else {
