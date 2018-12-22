@@ -83,7 +83,10 @@ class Game {
 		this.currentTimingSection = 0;
 
 		this.judgeOffset = 0;
+		this.universalOffset = -40;
 		this.showFPS = true;
+
+		this.playDelay = 3000;
 
 		this.state = 0;
 		/*
@@ -425,12 +428,12 @@ class Game {
 		game.currentAudio.currentTime = 0;
 
 		game.state = 4;
-		game.playStartTime = performance.now();
+		game.playStartTime = performance.now() + this.playDelay + this.universalOffset;
 
 		game.currentTimingSection = 0;
 
 		if (game.currentAudio !== null) {
-			game.currentAudio.play();
+			setTimeout(function () { game.currentAudio.play; }, game.playDelay);
 		}
 	}
 
