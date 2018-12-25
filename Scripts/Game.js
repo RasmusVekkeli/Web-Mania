@@ -115,6 +115,34 @@ class Game {
 
 		this.config = {};
 		this.defaultConfig = {
+			keyConfigs: [
+				new KeyConfig(	//Global config (index 0), other configs copy missing parameters from this one
+					[],			//Keys for lanes (button config)
+					128,		//Lane width
+					160,		//Hit position
+					true,		//Down scroll (true: notes go from top to bottom)
+					2.3,		//Scroll speed multiplier (1: notes move 1000 pixels per second)
+					false,		//Special lane, not yet implemented
+					false,		//Special lane side (true: left)
+					30,			//Note height for bar notes, should be rewritten to get from a noteskin object
+					null,		//Noteskin object to be used, noteskins not yet implemented
+					[],			//Note snap colours, not yet implemented
+					50,			//Height of the beat line
+					"#FFFFFF"	//Colour of the beat line
+				),
+
+				//Rest will copy other settings from the global config apart from keys
+				new KeyConfig(["Space"]),
+				new KeyConfig(["KeyX", "KeyM"]),
+				new KeyConfig(["KeyX", "Space", "KeyM"]),
+				new KeyConfig(["KeyZ", "KeyX", "KeyM", "Comma"]),
+				new KeyConfig(["KeyZ", "KeyX", "Space", "KeyM", "Comma"]),
+				new KeyConfig(["KeyZ", "KeyX", "KeyC", "KeyN", "KeyM", "Comma"]),
+				new KeyConfig(["KeyZ", "KeyX", "KeyC", "Space", "KeyN", "KeyM", "Comma"]),
+				new KeyConfig(["KeyZ", "KeyX", "KeyC", "ShiftLeft", "Space", "KeyN", "KeyM", "Comma"]),
+				new KeyConfig(["KeyZ", "KeyX", "KeyC", "KeyV", "Space", "KeyB", "KeyN", "KeyM", "Comma"]),
+			],
+
 			newUser: true,
 			playfieldLaneWidth: 128,
 			playfieldHitPosition: 200,
@@ -157,6 +185,7 @@ class Game {
 	}
 
 	get beatT() {
+		//Calculate milliseconds per beat from bpm
 		let mspb = 60000 / this.currentChart.timingPoints[this.currentTimingSection].bpm;
 
 		let t = (this.currentPlayTime - this.currentChart.timingPoints[this.currentTimingSection].time) % mspb / mspb;
@@ -170,6 +199,15 @@ class Game {
 		}
 
 		return t;
+	}
+
+	get currentKeyConfig() {
+		if (this.currentChart === null) {
+			return this.config.keyConfigs[0];
+		}
+		else {
+			return this.config.keyConfigs[this.currentChart.keyCount];
+		}
 	}
 
 	UpdateFPS() {
@@ -433,7 +471,7 @@ class Game {
 		game.currentTimingSection = 0;
 
 		if (game.currentAudio !== null) {
-			setTimeout(function () { game.currentAudio.play; }, game.playDelay);
+			setTimeout(function () { game.currentAudio.play(); }, game.playDelay);
 		}
 	}
 
@@ -470,7 +508,6 @@ class Game {
 			while (this.currentTimingSection < this.currentChart.timingPoints.length - 1) {
 				if (this.currentChart.timingPoints[this.currentTimingSection + 1].time < this.currentPlayTime) {
 					this.currentTimingSection++;
-					console.log(this.currentTimingSection);
 				}
 				else {
 					break;
