@@ -123,7 +123,7 @@ class Game {
 					true,		//Down scroll (true: notes go from top to bottom)
 					2.3,		//Scroll speed multiplier (1: notes move 1000 pixels per second)
 					false,		//Special lane, not yet implemented
-					false,		//Special lane side (true: left)
+					true,		//Special lane side (true: left)
 					30,			//Note height for bar notes, should be rewritten to get from a noteskin object
 					null,		//Noteskin object to be used, noteskins not yet implemented
 					[],			//Note snap colours, not yet implemented
@@ -141,27 +141,6 @@ class Game {
 				new KeyConfig(["KeyZ", "KeyX", "KeyC", "Space", "KeyN", "KeyM", "Comma"]),
 				new KeyConfig(["KeyZ", "KeyX", "KeyC", "ShiftLeft", "Space", "KeyN", "KeyM", "Comma"]),
 				new KeyConfig(["KeyZ", "KeyX", "KeyC", "KeyV", "Space", "KeyB", "KeyN", "KeyM", "Comma"]),
-			],
-
-			newUser: true,
-			playfieldLaneWidth: 128,
-			playfieldHitPosition: 200,
-			playfieldDownScroll: true,
-			playfieldScrollSpeedMult: 1,
-			playfieldSpecialLane: true,
-			playfieldSpecialLaneLeft: true,
-
-			keys: [
-				[],
-				["Space"],
-				["KeyX", "KeyM"],
-				["KeyX", "Space", "KeyM"],
-				["KeyZ", "KeyX", "KeyM", "Comma"],
-				["KeyZ", "KeyX", "Space", "KeyM", "Comma"],
-				["KeyZ", "KeyX", "KeyC", "KeyN", "KeyM", "Comma"],
-				["KeyZ", "KeyX", "KeyC", "Space", "KeyN", "KeyM", "Comma"],
-				["KeyZ", "KeyX", "KeyC", "ShiftLeft", "Space", "KeyN", "KeyM", "Comma"],
-				["KeyZ", "KeyX", "KeyC", "KeyV", "Space", "KeyB", "KeyN", "KeyM", "Comma"]
 			],
 		};
 
@@ -202,12 +181,13 @@ class Game {
 	}
 
 	get currentKeyConfig() {
-		if (this.currentChart === null) {
-			return this.config.keyConfigs[0];
+		let tempConfig = JSON.parse(JSON.stringify(this.config.keyConfigs[0]));
+
+		if (this.currentChart !== null) {
+			Object.assign(tempConfig, this.config.keyConfigs[this.currentChart.keyCount]);
 		}
-		else {
-			return this.config.keyConfigs[this.currentChart.keyCount];
-		}
+
+		return tempConfig;
 	}
 
 	UpdateFPS() {
@@ -230,8 +210,8 @@ class Game {
 
 			default:
 				if (game.state === 4) {
-					for (let i = 0; i < game.config.keys[game.currentChart.keyCount].length; i++) {
-						if (e.code == game.config.keys[game.currentChart.keyCount][i]) {
+					for (let i = 0; i < game.currentKeyConfig.keys.length; i++) {
+						if (e.code == game.currentKeyConfig.keys[i]) {
 							game.Judge(i);
 							break;
 						}
@@ -245,8 +225,8 @@ class Game {
 		switch (e.code) {
 			default:
 				if (game.state === 4) {
-					for (let i = 0; i < game.config.keys[game.currentChart.keyCount].length; i++) {
-						if (e.code == game.config.keys[game.currentChart.keyCount][i]) {
+					for (let i = 0; i < game.currentKeyConfig.keys.length; i++) {
+						if (e.code == game.currentKeyConfig.keys[i]) {
 							game.JudgeLNEnd(i);
 							break;
 						}
@@ -333,109 +313,13 @@ class Game {
 	}
 
 	LoadConfiguration() {
-		this.config = {};
+		this.config = JSON.parse(JSON.stringify(this.defaultConfig));
 
-		this.config.unsaved = false;
-
-		if (localStorage.getItem("newUser") !== null) {
-			this.config.newUser = false;
-		}
-		else {
-			this.config.newUser = this.defaultConfig.newUser;
-			this.config.unsaved = true;
-		}
-
-		if (localStorage.getItem("playfieldLaneWidth") !== null) {
-			this.config.playfieldLaneWidth = Number(localStorage.getItem("playfieldLaneWidth"));
-		}
-		else {
-			this.config.playfieldLaneWidth = this.defaultConfig.playfieldLaneWidth;
-			this.config.unsaved = true;
-		}
-
-		if (localStorage.getItem("playfieldHitPosition") !== null) {
-			this.config.playfieldHitPosition = Number(localStorage.getItem("playfieldHitPosition"));
-		}
-		else {
-			this.config.playfieldHitPosition = this.defaultConfig.playfieldHitPosition;
-			this.config.unsaved = true;
-		}
-
-		if (localStorage.getItem("playfieldDownScroll") !== null) {
-			this.config.playfieldDownScroll = Number(localStorage.getItem("playfieldDownScroll"));
-		}
-		else {
-			this.config.playfieldDownScroll = this.defaultConfig.playfieldDownScroll;
-			this.config.unsaved = true;
-		}
-
-		if (localStorage.getItem("playfieldScrollSpeedMult") !== null) {
-			this.config.playfieldScrollSpeedMult = Number(localStorage.getItem("playfieldScrollSpeedMult"));
-		}
-		else {
-			this.config.playfieldScrollSpeedMult = this.defaultConfig.playfieldScrollSpeedMult;
-			this.config.unsaved = true;
-		}
-
-		if (localStorage.getItem("playfieldSpecialLane") !== null) {
-			this.config.playfieldSpecialLane = Boolean(localStorage.getItem("playfieldSpecialLane"));
-		}
-		else {
-			this.config.playfieldSpecialLane = this.defaultConfig.playfieldSpecialLane;
-			this.config.unsaved = true;
-		}
-
-		if (localStorage.getItem("playfieldSpecialLaneLeft") !== null) {
-			this.config.playfieldSpecialLaneLeft = Boolean(localStorage.getItem("playfieldSpecialLaneLeft"));
-		}
-		else {
-			this.config.playfieldSpecialLaneLeft = this.defaultConfig.playfieldSpecialLaneLeft;
-			this.config.unsaved = true;
-		}
-
-		this.config.keys = [];
-
-		for (let i = 0; i < this.defaultConfig.keys.length; i++) {
-			if (localStorage.getItem("keys" + i) !== null) {
-				let tempString = localStorage.getItem("keys" + i);
-
-				this.config.keys[i] = [];
-
-				while (tempString.indexOf(",") != -1) {
-					this.config.keys[i].push(tempString.substr(0, tempString.indexOf(",")));
-					tempString = tempString.substr(tempString.indexOf(",") + 1);
-				}
-			}
-			else {
-				this.config.keys[i] = this.defaultConfig.keys[i].slice(0);
-				this.config.unsaved = true;
-			}
-		}
+		Object.assign(this.config, JSON.parse(localStorage.getItem("gameConfig")));
 	}
 
 	SaveConfiguration() {
-		if (this.config.unsaved) {
-			localStorage.setItem("newUser", "false");
-			localStorage.setItem("playfieldLaneWidth", String(this.config.playfieldLaneWidth));
-			localStorage.setItem("playfieldHitPosition", String(this.config.playfieldHitPosition));
-			localStorage.setItem("playfieldDownScroll", String(this.config.playfieldDownScroll));
-			localStorage.setItem("playfieldScrollSpeedMult", String(this.config.playfieldScrollSpeedMult));
-			localStorage.setItem("playfieldSpecialLane", String(this.config.playfieldSpecialLane));
-			localStorage.setItem("playfieldSpecialLaneLeft", String(this.config.playfieldSpecialLaneLeft));
-
-			//Store key strings
-			for (let i = 0; i < this.defaultConfig.keys.length; i++) {
-				let tempString = "";
-
-				for (let j = 0; j < this.defaultConfig.keys[i].length; j++) {
-					tempString += this.config.keys[i][j] + ",";
-				}
-
-				localStorage.setItem("keys" + i, tempString);
-			}
-
-			this.config.unsaved = false;
-		}
+		localStorage.setItem("gameConfig", JSON.stringify(game.config));
 	}
 
 	Play(rate = 1.0) {
@@ -545,6 +429,8 @@ class Game {
 	}
 
 	Start() {
+		this.LoadConfiguration();
+
 		this.objectLayers = [
 			new Layer("bgLayer", [new BGImage(null, false, false, true)]),
 			new Layer("playfieldLayer", [new Playfield()]),
@@ -560,8 +446,6 @@ class Game {
 		this.comboText = this.GetLayerByName("playfieldUILayer").objectList[1];
 
 		this.fpsText = this.GetLayerByName("debugUILayer").objectList[0];
-
-		this.LoadConfiguration();
 
 		addEventListener("keydown", this.HandleKeyDown);
 		addEventListener("keyup", this.HandleKeyUp);
