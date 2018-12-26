@@ -2,20 +2,10 @@ class Playfield extends GameObject {
 	constructor() {
 		super(false, false, true);
 
-		//Most of these should be rewritten to get the values from some config class
-		this.keyCount = 4;
-		this.laneWidth = 128;
-		this.hitPosition = 160;
-		this.barnoteHeight = 30;
-		this.type;
-		this.snapColor;
-		this.centered;
-		this.pos = new Rect(this.centeredPosition, 0, this.laneWidth * this.keyCount, game.context.canvas.height);
-		this.downScroll = true;
-		this.scrollSpeedMult = 2.3;
+		this.keyConfig = game.currentKeyConfig;
 
-		this.beatLineHeight = 30;
-		this.beatLineColor = "#FFFFFF";
+		//Most of these should be rewritten to get the values from some config class
+		this.pos = new Rect(this.centeredPosition, 0, this.keyConfig.laneWidth * (game.currentChart === null ? 0 : game.currentChart.keyCount), game.context.canvas.height);
 	}
 
 	Update() {
@@ -26,10 +16,10 @@ class Playfield extends GameObject {
 				adjustedT = 0.9999; //Because if both gradient stops are 0 it turns into solid color of white instead of transparent (in my case) for some reason. Blame the web API guys, not me.
 			}
 
-			this.beatLineGradient = game.context.createLinearGradient(0, this.hitPositionY, 0, this.hitPositionY + (this.downScroll ? -this.beatLineHeight : this.beatLineHeight));
+			this.beatLineGradient = game.context.createLinearGradient(0, this.hitPositionY, 0, this.hitPositionY + (this.keyConfig.downScroll ? -this.keyConfig.beatLineHeight : this.keyConfig.beatLineHeight));
 
 			this.beatLineGradient.addColorStop(1 - adjustedT, "rgba(0, 0, 0, 0)");
-			this.beatLineGradient.addColorStop(0, this.beatLineColor);
+			this.beatLineGradient.addColorStop(0, this.keyConfig.beatLineColour);
 		}
 	}
 
@@ -41,11 +31,11 @@ class Playfield extends GameObject {
 
 			//Draw playfield judgement line
 			game.context.fillStyle = "#FFFFFF";
-			game.context.fillRect(this.pos.x, this.hitPositionY, this.width, this.downScroll ? 2 : -2);
+			game.context.fillRect(this.pos.x, this.hitPositionY, this.width, this.keyConfig.downScroll ? 2 : -2);
 
 			//Draw beatline
 			game.context.fillStyle = this.beatLineGradient;
-			game.context.fillRect(this.pos.x, this.hitPositionY, this.width, this.downScroll ? -this.beatLineHeight : this.beatLineHeight);
+			game.context.fillRect(this.pos.x, this.hitPositionY, this.width, this.keyConfig.downScroll ? -this.keyConfig.beatLineHeight : this.keyConfig.beatLineHeight);
 			
 			//Draw playfield notes
 			if (game.state === 4) {
@@ -59,7 +49,7 @@ class Playfield extends GameObject {
 									y = this.CalculateY(game.currentChart.noteList[i][j]);
 
 									game.context.fillStyle = "#FF0000";
-									game.context.fillRect(this.pos.x + this.laneWidth * i, y, this.laneWidth, this.downScroll ? -this.barnoteHeight : this.barnoteHeight);
+									game.context.fillRect(this.pos.x + this.keyConfig.laneWidth * i, y, this.keyConfig.laneWidth, this.keyConfig.downScroll ? -this.keyConfig.barNoteHeight : this.keyConfig.barNoteHeight);
 								}
 
 								break;
@@ -78,11 +68,11 @@ class Playfield extends GameObject {
 
 									//Long note body
 									game.context.fillStyle = "#FFFFFF";
-									game.context.fillRect(this.pos.x + this.laneWidth * i, y, this.laneWidth, endY - y);
+									game.context.fillRect(this.pos.x + this.keyConfig.laneWidth * i, y, this.keyConfig.laneWidth, endY - y);
 
 									//Long note head
 									game.context.fillStyle = "#FF0000";
-									game.context.fillRect(this.pos.x + this.laneWidth * i, y, this.laneWidth, this.downScroll ? -this.barnoteHeight : this.barnoteHeight);
+									game.context.fillRect(this.pos.x + this.keyConfig.laneWidth * i, y, this.keyConfig.laneWidth, this.keyConfig.downScroll ? -this.keyConfig.barNoteHeight : this.keyConfig.barNoteHeight);
 								}
 
 								break;
@@ -98,34 +88,25 @@ class Playfield extends GameObject {
 	}
 
 	get width() {
-		return this.keyCount * this.laneWidth;
+		return (game.currentChart === null ? 0 : game.currentChart.keyCount) * this.keyConfig.laneWidth;
 	}
 
 	get hitPositionY() {
-		return this.downScroll ? game.context.canvas.height - this.hitPosition : this.hitPosition;
+		return this.keyConfig.downScroll ? game.context.canvas.height - this.keyConfig.hitPosition : this.keyConfig.hitPosition;
 	}
 
 	CalculateY(note) {
-		if (this.downScroll) {
-			return game.context.canvas.height - this.hitPosition + (game.currentPlayTime - note.time) * this.scrollSpeedMult;
+		if (this.keyConfig.downScroll) {
+			return game.context.canvas.height - this.keyConfig.hitPosition + (game.currentPlayTime - note.time) * this.keyConfig.scrollSpeedMult;
 		}
 		else {
-			return this.hitPosition - (game.currentPlayTime - note.time) * this.scrollSpeedMult;
+			return this.keyConfig.hitPosition - (game.currentPlayTime - note.time) * this.keyConfig.scrollSpeedMult;
 		}
 	}
 
 	ReloadPlayfieldParameters() {
-		if (game.currentChart !== null) {
-			this.keyCount = game.currentChart.keyCount;
-		}
-		
-		this.laneWidth = game.config.laneWidth;
-		this.hitPosition = game.config.hitPosition;
-		this.type = 0;
-		this.snapColor = false;
-		this.centered = true;
-		this.pos = new Rect(this.centeredPosition, 0, this.laneWidth * this.keyCount, game.context.canvas.height);
-		this.downScroll = game.config.downScroll;
-		this.scrollSpeedMult = game.config.scrollSpeedMult;
+		this.keyConfig = game.currentKeyConfig;
+
+		this.pos = new Rect(this.centeredPosition, 0, this.keyConfig.laneWidth * (game.currentChart === null ? 0 : game.currentChart.keyCount), game.context.canvas.height);
 	}
 }
