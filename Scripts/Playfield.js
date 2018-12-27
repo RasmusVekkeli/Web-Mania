@@ -4,12 +4,16 @@ class Playfield extends GameObject {
 
 		this.keyConfig = game.currentKeyConfig;
 
-		//Most of these should be rewritten to get the values from some config class
 		this.pos = new Rect(this.centeredPosition, 0, this.keyConfig.laneWidth * (game.currentChart === null ? 0 : game.currentChart.keyCount), game.context.canvas.height);
+
+		this.nextNoteIndex = [];
+		this.noteYsToRender = [];
+		this.longNoteYsToRender = [];
 	}
 
 	Update() {
 		if (game.state === 4) {
+			//Beatline code
 			let adjustedT = game.beatT * 2;
 
 			if (adjustedT > 1) {
@@ -40,43 +44,91 @@ class Playfield extends GameObject {
 			//Draw playfield notes
 			if (game.state === 4) {
 				for (let i = 0; i < game.currentChart.noteList.length; i++) {
-					for (let j = game.currentChart.noteList[i].length - 1; j >= 0; j--) {
-						let y;
+					//Calculate Y-values
+					for (let j = this.nextNoteIndex[i]; j < game.currentChart.noteList[i].length; j++) {
+						function renderLNYs (y, endY) {
+							this.y = y;
+							this.endY = endY;
+						}
+
+						let yValue;
 
 						switch (game.currentChart.noteList[i][j].type) {
-							case 0: //Normal note
-								if (game.currentScore[i][j] === undefined || game.currentScore[i][j] === game.hitWindows.miss.accValue) {
-									y = this.CalculateY(game.currentChart.noteList[i][j]);
+							case 0:
+								//Calculate note's Y coordinate
+								yValue = this.CalculateY(game.currentChart.noteList[i][j]);
 
-									game.context.fillStyle = "#FF0000";
-									game.context.fillRect(this.pos.x + this.keyConfig.laneWidth * i, y, this.keyConfig.laneWidth, this.keyConfig.downScroll ? -this.keyConfig.barNoteHeight : this.keyConfig.barNoteHeight);
+								//Check if note has not yet entered on screen
+								if (this.keyConfig.downScroll ? (yValue < 0) : (yValue > game.context.canvas.height)) {
+									break;
+								}
+								//Check if note has already left the screen
+								else if (this.keyConfig.downScroll ? (yValue - this.keyConfig.barNoteHeight > game.context.canvas.height) : (yValue + this.keyConfig.barNoteHeight < 0)) {
+									this.nextNoteIndex[i]++;
+								}
+								//Note is on screen if we reached here, push its Y coordinate to render list
+								else {
+									if (game.currentScore[i][j] === undefined || game.currentScore[i][j] === game.hitWindows.miss.accValue) {
+										this.noteYsToRender.push(yValue);
+									}
 								}
 
 								break;
 
-							case 1: //Long note
+							case 1:
+								//Calculate note's Y coordinate
+								yValue = this.CalculateY(game.currentChart.noteList[i][j]);
+								let endYValue = this.CalculateY(game.currentChart.noteList[i][j + 1]);
+
+								//If the long note's head has been hit (or missed), but it's tail hasn't, make sure the head's Y coordinate is at hitposition
 								if (game.currentScore[i][j] !== game.hitWindows.miss.accValue && game.currentScore[i][j + 1] === undefined) {
-									y = game.currentScore[i][j] === undefined ? this.CalculateY(game.currentChart.noteList[i][j]) : this.hitPositionY;
-									let endY;
-
-									if (game.currentChart.noteList[i][j + 1].time < game.currentPlayTime) {
-										endY = y;
+									if (game.currentScore[i][j] !== undefined) {
+										yValue = this.hitPositionY;
 									}
-									else {
-										endY = this.CalculateY(game.currentChart.noteList[i][j + 1]);
-									}
+								}
+								else {
+									break;
+								}
 
-									//Long note body
-									game.context.fillStyle = "#FFFFFF";
-									game.context.fillRect(this.pos.x + this.keyConfig.laneWidth * i, y, this.keyConfig.laneWidth, endY - y);
+								//Make sure long notes won't render "in reverse" if long note head has been held too long
+								if (game.currentChart.noteList[i][j + 1].time < game.currentPlayTime) {
+									endYValue = yValue;
+								}
 
-									//Long note head
-									game.context.fillStyle = "#FF0000";
-									game.context.fillRect(this.pos.x + this.keyConfig.laneWidth * i, y, this.keyConfig.laneWidth, this.keyConfig.downScroll ? -this.keyConfig.barNoteHeight : this.keyConfig.barNoteHeight);
+								//Check if long note head has not yet entered on screen
+								if (this.keyConfig.downScroll ? (yValue < 0) : (yValue > game.context.canvas.height)) {
+									break;
+								}
+								//Check if long note tail has already left the screen
+								else if (this.keyConfig.downScroll ? (endYValue > game.context.canvas.height) : (endYValue < 0)) {
+									this.nextNoteIndex[i]++;
+								}
+								//The entire long note is on screen if we reached here, push it's head's Y coordinate to render note list and tail's Y coordinates to render long note list 
+								else {
+									this.noteYsToRender.push(yValue);
+									this.longNoteYsToRender.push(new renderLNYs(yValue, endYValue));
 								}
 
 								break;
+
+							case 2:
+								break;
+
 						}
+					}
+
+					//Render long notes
+					while (this.longNoteYsToRender.length > 0) {
+						let longNoteYs = this.longNoteYsToRender.pop();
+
+						game.context.fillStyle = "#FFFFFF";
+						game.context.fillRect(this.pos.x + this.keyConfig.laneWidth * i, longNoteYs.y, this.keyConfig.laneWidth, longNoteYs.endY - longNoteYs.y);
+					}
+
+					//Render notes
+					while (this.noteYsToRender.length > 0) {
+						game.context.fillStyle = "#FF0000";
+						game.context.fillRect(this.pos.x + this.keyConfig.laneWidth * i, this.noteYsToRender.pop(), this.keyConfig.laneWidth, this.keyConfig.downScroll ? -this.keyConfig.barNoteHeight : this.keyConfig.barNoteHeight);
 					}
 				}
 			}

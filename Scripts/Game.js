@@ -202,6 +202,11 @@ class Game {
 	}
 
 	HandleKeyDown(e) {
+		//We should only care about keys that are just pressed, not held down
+		if (e.repeat) {
+			return;
+		}
+
 		switch (e.code) {
 			case "Enter":
 				game.Play();
@@ -339,9 +344,11 @@ class Game {
 		}
 
 		game.currentScore = [];
+		game.playfield.nextNoteIndex = [];
 
 		for (let i = 0; i < game.currentChart.keyCount; i++) {
 			game.currentScore.push([]);
+			game.playfield.nextNoteIndex.push(0);
 		}
 
 		game.currentCombo = 0;
@@ -533,5 +540,7 @@ class Game {
 		for (let i = 0; i < game.currentChart.keyCount; i++) {
 			game.currentScore.push([]);
 		}
+
+		game.playfield.ReloadPlayfieldParameters();
 	}
 }
