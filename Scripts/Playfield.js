@@ -44,6 +44,7 @@ class Playfield extends GameObject {
 			//Draw playfield notes
 			if (game.state === 4) {
 				for (let i = 0; i < game.currentChart.noteList.length; i++) {
+                    noteFor:
 					//Calculate Y-values
 					for (let j = this.nextNoteIndex[i]; j < game.currentChart.noteList[i].length; j++) {
 						function renderLNYs (y, endY) {
@@ -60,7 +61,7 @@ class Playfield extends GameObject {
 
 								//Check if note has not yet entered on screen
 								if (this.keyConfig.downScroll ? (yValue < 0) : (yValue > game.context.canvas.height)) {
-									break;
+                                    break noteFor;
 								}
 								//Check if note has already left the screen
 								else if (this.keyConfig.downScroll ? (yValue - this.keyConfig.barNoteHeight > game.context.canvas.height) : (yValue + this.keyConfig.barNoteHeight < 0)) {
@@ -97,7 +98,7 @@ class Playfield extends GameObject {
 
 								//Check if long note head has not yet entered on screen
 								if (this.keyConfig.downScroll ? (yValue < 0) : (yValue > game.context.canvas.height)) {
-									break;
+									break noteFor;
 								}
 								//Check if long note tail has already left the screen
 								else if (this.keyConfig.downScroll ? (endYValue > game.context.canvas.height) : (endYValue < 0)) {
