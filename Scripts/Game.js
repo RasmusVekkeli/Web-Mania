@@ -113,6 +113,8 @@ class Game {
 
 		this.objectLayers;
 
+		this.autoPlay = true;
+
 		this.config = {};
 		this.defaultConfig = {
 			keyConfigs: [
@@ -242,6 +244,10 @@ class Game {
 	}
 
 	Judge(lane) {
+		if (this.autoPlay) {
+			return;
+		}
+
 		if (game.currentChart.noteList[lane].length > game.currentScore[lane].length) {
 			if (game.currentChart.noteList[lane][game.currentScore[lane].length].type !== 2) {
 				let hitError = Math.abs(game.currentChart.noteList[lane][game.currentScore[lane].length].time - game.currentPlayTime + game.judgeOffset);
@@ -282,8 +288,12 @@ class Game {
 			}
 		}
 	}
-
+	
 	JudgeLNEnd(lane) {
+		if (this.autoPlay) {
+			return;
+		}
+
 		if (game.currentChart.noteList[lane].length > game.currentScore[lane].length) {
 			if (game.currentChart.noteList[lane][game.currentScore[lane].length].type === 2) {
 				let hitError = Math.abs(game.currentChart.noteList[lane][game.currentScore[lane].length].time - game.currentPlayTime + game.judgeOffset);
@@ -386,6 +396,16 @@ class Game {
 
 		if (this.state === 4) {
 			for (let i = 0; i < this.currentChart.keyCount; i++) {
+				// Auto-play
+				if (this.autoPlay) {
+					if (this.currentChart.noteList[i][this.currentScore[i].length].time <= this.currentPlayTime) {
+						game.currentScore[i].push(game.hitWindows.marvelous.accValue);
+						game.lastJudgement = game.hitWindows.marvelous;
+						game.IncrementCombo();
+						game.judgementText.Animate();
+					}
+				}
+
 				//Check for missed notes
 				if (this.currentChart.noteList[i].length > this.currentScore[i].length) {
 					if (this.currentChart.noteList[i][this.currentScore[i].length].time < this.currentPlayTime - this.hitWindows.miss.hitWindow) {
