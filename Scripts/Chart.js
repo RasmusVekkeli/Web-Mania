@@ -16,9 +16,12 @@ class Chart {
 		this.keyCount;
 
 		this.timingPoints = [];
+		this.originalTimingPoints = [];
 		this.scrollSpeedPoints = [];
+		this.originalScrollSpeedPoints = [];
 
 		this.noteList = [[]];
+		this.originalNoteList = [[]];
 
 		this.majorBPM;
 	}
@@ -150,8 +153,13 @@ class Chart {
 			returnChart.noteList[i].sort(function (a, b) { a.time - b.time });
 		}
 
+		returnChart.originalNoteList = JSON.parse(JSON.stringify(returnChart.noteList));
+
 		returnChart.scrollSpeedPoints.sort(function (a, b) { a.time - b.time });
+		returnChart.originalScrollSpeedPoints = JSON.parse(JSON.stringify(returnChart.scrollSpeedPoints));
+
 		returnChart.timingPoints.sort(function (a, b) { a.time - b.time });
+		returnChart.originalTimingPoints = JSON.parse(JSON.stringify(returnChart.timingPoints));
 
 		//returnChart.majorBPM = Chart.CalculateMajorBPM(returnChart.timingPoints, returnChart.firstNote, returnChart.lastNote);
 

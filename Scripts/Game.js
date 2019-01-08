@@ -338,7 +338,10 @@ class Game {
 	}
 
 	Play(rate = 1.0) {
-		//Important Note: with rates not equal to 1 will mutate the loaded chart. Any replays of the mutated chart without reloading it will result in weird shit.
+		//Copy original note lists to the working note lists
+		game.currentChart.noteList = JSON.parse(JSON.stringify(game.currentChart.originalNoteList));
+		game.currentChart.scrollSpeedPoints = JSON.parse(JSON.stringify(game.currentChart.originalScrollSpeedPoints));
+		game.currentChart.timingPoints = JSON.parse(JSON.stringify(game.currentChart.originalTimingPoints));
 
 		//"this" won't work here either for some reason (or it might, i had an issue here earlier i fixed, haven't tested "this" yet)
 		for (let i = 0; i < game.currentChart.noteList.length; i++) {
@@ -349,6 +352,7 @@ class Game {
 
 		for (let i = 0; i < game.currentChart.timingPoints.length; i++) {
 			game.currentChart.timingPoints[i].time /= rate;
+			game.currentChart.timingPoints[i].bpm *= rate;
 		}
 
 		for (let i = 0; i < game.currentChart.scrollSpeedPoints.length; i++) {
