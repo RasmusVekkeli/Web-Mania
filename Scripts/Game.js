@@ -396,22 +396,21 @@ class Game {
 
 		if (this.state === 4) {
 			for (let i = 0; i < this.currentChart.keyCount; i++) {
-				// Auto-play
-				if (this.autoPlay) {
-					if (this.currentChart.noteList[i][this.currentScore[i].length].time <= this.currentPlayTime) {
-						game.currentScore[i].push(game.hitWindows.marvelous.accValue);
-						game.lastJudgement = game.hitWindows.marvelous;
-						game.IncrementCombo();
-						game.judgementText.Animate();
-					}
-				}
-
-				//Check for missed notes
 				if (this.currentChart.noteList[i].length > this.currentScore[i].length) {
-					if (this.currentChart.noteList[i][this.currentScore[i].length].time < this.currentPlayTime - this.hitWindows.miss.hitWindow) {
-						this.currentScore[i].push(this.hitWindows.miss.accValue);
-						this.lastJudgement = this.hitWindows.miss;
-						this.currentCombo = 0;
+					// Auto-play
+					if (this.autoPlay) {
+						if (this.currentChart.noteList[i][this.currentScore[i].length].time <= this.currentPlayTime) {
+							game.currentScore[i].push(game.hitWindows.marvelous.accValue);
+							game.lastJudgement = game.hitWindows.marvelous;
+							game.IncrementCombo();
+							game.judgementText.Animate();
+						}
+					} else { // Check for missed notes
+						if (this.currentChart.noteList[i][this.currentScore[i].length].time < this.currentPlayTime - this.hitWindows.miss.hitWindow) {
+							this.currentScore[i].push(this.hitWindows.miss.accValue);
+							this.lastJudgement = this.hitWindows.miss;
+							this.currentCombo = 0;
+						}
 					}
 				}
 
