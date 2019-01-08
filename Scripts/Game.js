@@ -144,13 +144,13 @@ class Game {
 			],
 		};
 
-		this.hitWindows = {
-			marvelous: { hitWindow: 20, accValue: 100, judgeText: "Marvelous!!" },
-			perfect: { hitWindow: 40, accValue: 100, judgeText: "Perfect!" },
-			ok: { hitWindow: 60, accValue: 50, judgeText: "OK" },
-			bad: { hitWindow: 80, accValue: 0, judgeText: "Bad" },
-			miss: { hitWindow: 100, accValue: -20, judgeText: "Miss" }
-		}
+        this.hitWindows = {
+            marvelous: { hitWindow: 20, accValue: 100, judgeText: "Marvelous!!" },
+            perfect: { hitWindow: 40, accValue: 100, judgeText: "Perfect!" },
+            ok: { hitWindow: 60, accValue: 50, judgeText: "OK" },
+            bad: { hitWindow: 80, accValue: 0, judgeText: "Bad" },
+            miss: { hitWindow: 100, accValue: -20, judgeText: "Miss" }
+        };
 
 		this.lastJudgement = this.hitWindows.marvelous;
 	}
@@ -213,7 +213,7 @@ class Game {
 
 				break;
 
-			default:
+			default: //Catches lane key presses
 				if (game.state === 4) {
 					for (let i = 0; i < game.currentKeyConfig.keys.length; i++) {
 						if (e.code == game.currentKeyConfig.keys[i]) {
@@ -328,6 +328,8 @@ class Game {
 	}
 
 	Play(rate = 1.0) {
+		//Important Note: with rates not equal to 1 will mutate the loaded chart. Any replays of the mutated chart without reloading it will result in weird shit.
+
 		//"this" won't work here either for some reason (or it might, i had an issue here earlier i fixed, haven't tested "this" yet)
 		for (let i = 0; i < game.currentChart.noteList.length; i++) {
 			for (let j = 0; j < game.currentChart.noteList[i].length; j++) {
@@ -384,6 +386,7 @@ class Game {
 
 		if (this.state === 4) {
 			for (let i = 0; i < this.currentChart.keyCount; i++) {
+				//Check for missed notes
 				if (this.currentChart.noteList[i].length > this.currentScore[i].length) {
 					if (this.currentChart.noteList[i][this.currentScore[i].length].time < this.currentPlayTime - this.hitWindows.miss.hitWindow) {
 						this.currentScore[i].push(this.hitWindows.miss.accValue);
@@ -392,11 +395,13 @@ class Game {
 					}
 				}
 
+				//Check for end of chart
 				if (this.currentChart.lastNote.time < this.currentPlayTime - 3000) {
 					this.Stop();
 				}
 			}
 
+			//Update current timing section
 			while (this.currentTimingSection < this.currentChart.timingPoints.length - 1) {
 				if (this.currentChart.timingPoints[this.currentTimingSection + 1].time < this.currentPlayTime) {
 					this.currentTimingSection++;
@@ -420,8 +425,10 @@ class Game {
 	}
 
 	Draw() {
+		//Clear screen
 		this.context.clearRect(0, 0, this.context.canvas.width, this.context.canvas.height);
 
+		//Draws!!/////////////////////////////////////////////////////
 		for (let i = 0; i < this.objectLayers.length; i++) {
 			this.objectLayers[i].Draw();
 		}
@@ -455,6 +462,7 @@ class Game {
 
 		this.fpsText = this.GetLayerByName("debugUILayer").objectList[0];
 
+		//Add event listeners to key presses and releases
 		addEventListener("keydown", this.HandleKeyDown);
 		addEventListener("keyup", this.HandleKeyUp);
 
