@@ -484,6 +484,7 @@ class Game {
 		this.comboText = this.GetLayerByName("playfieldUILayer").objectList[1];
 
 		this.fpsText = this.GetLayerByName("debugUILayer").objectList[0];
+		this.fpsText.textStyle = "#FFFFFF";
 
 		//Add event listeners to key presses and releases
 		addEventListener("keydown", this.HandleKeyDown);
