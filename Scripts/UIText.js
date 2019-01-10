@@ -11,6 +11,10 @@ class UIText extends GameObject{
 	}
 
 	Draw() {
+		if (this.skipDraw) {
+			return;
+		}
+
 		if (this.anchor.y < 0) {
 			game.context.textBaseline = "top";
 		}

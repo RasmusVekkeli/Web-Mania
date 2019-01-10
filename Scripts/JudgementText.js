@@ -18,6 +18,10 @@ class JudgementText extends UIText{
 	}
 
 	Update() {
+		if (this.skipUpdate) {
+			return;
+		}
+
 		this.time = performance.now();
 
 		let adjustedT;
@@ -34,6 +38,8 @@ class JudgementText extends UIText{
 		this.text = game.lastJudgement.judgeText;
 
 		this.pos.x = game.playfield.pos.x + game.playfield.width / 2;
+
+		this.skipDraw = game.state !== 4;
 	}
 
 	get t() {

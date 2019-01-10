@@ -28,7 +28,7 @@ class Playfield extends GameObject {
 	}
 
 	Draw() {
-		if (!this.skipDraw) {
+		if (!this.skipDraw && game.state == 4) {
 			//Draw playfield bg
 			game.context.fillStyle = "rgba(0, 0, 0, 0.7)";
 			game.context.fillRect(this.pos.x, this.pos.y, this.width, this.pos.h);

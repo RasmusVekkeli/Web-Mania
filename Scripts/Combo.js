@@ -25,6 +25,10 @@ class Combo extends GameObject{
 	}
 
 	Update() {
+		if (this.skipUpdate) {
+			return;
+		}
+
 		this.time = performance.now();
 
 		let adjustedT;
@@ -49,6 +53,10 @@ class Combo extends GameObject{
 	}
 
 	Draw() {
+		if (this.skipDraw || game.state !== 4) {
+			return;
+		}
+
 		this.comboNumber.Draw();
 		this.comboText.Draw();
 	}
