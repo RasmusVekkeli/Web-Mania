@@ -473,6 +473,7 @@ class Game {
 			new Layer("bgLayer", [new BGImage(null, false, false, true)]),
 			new Layer("playfieldLayer", [new Playfield()]),
 			new Layer("playfieldUILayer", [new JudgementText(), new Combo()]),
+			new Layer("songSelectUILayer", [new SongWheel()]),
 			new Layer("debugUILayer", [new UIText("", 10, 10, -1, -1, 30, "Arial")]),
 		];
 
@@ -482,6 +483,8 @@ class Game {
 
 		this.judgementText = this.GetLayerByName("playfieldUILayer").objectList[0];
 		this.comboText = this.GetLayerByName("playfieldUILayer").objectList[1];
+
+		this.songWheel = this.GetLayerByName("songSelectUILayer").objectList[0];
 
 		this.fpsText = this.GetLayerByName("debugUILayer").objectList[0];
 		this.fpsText.textStyle = "#FFFFFF";
