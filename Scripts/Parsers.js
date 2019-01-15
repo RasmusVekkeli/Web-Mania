@@ -84,6 +84,15 @@ async function GenerateSongList(clearList = true) {
 
 		console.log(i + " files out of " + game.directorySelector.files.length + " processed");
 	}
+
+	//Wait until song data has been generated
+	let result = await GenerateSongData(directoryStartIndex, game.directorySelector.files.length);
+
+	//If song data was generated successfully, push it to the songList
+	if (result !== false) {
+		game.songList.push(result);
+	}
+
 	console.log("List generation done!");
 	return;
 }
@@ -231,7 +240,7 @@ async function FetchMetadataStringFromOsuFile(fileIndex) {
 
 function FindFileInFilelist(file, startIndex, endIndex) {
 	for (let i = startIndex; i < endIndex; i++) {
-		if (game.directorySelector.files[i].webkitRelativePath.endsWith(file)) {
+		if (game.directorySelector.files[i].webkitRelativePath.toLowerCase().endsWith(file.toLowerCase())) {
 			return i;
 		}
 	}
