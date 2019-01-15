@@ -38,7 +38,11 @@ class SongWheel extends GameObject {
 		game.context.textBaseline = "top";
 		game.context.textAlign = "left";
 
+		game.context.fillStyle = "rgba(0, 0, 0, 0.6)";
+		game.context.fillRect(this.x, this.pos.y, this.width, this.pos.h);
+
 		for (let i = 0; i < this.songPanelCount; i++) {
+			//Selection indicator
 			if (i + this.topIndex == this.selectionIndex) {
 				game.context.fillStyle = "rgba(255, 255, 255, 0.3)";
 				game.context.fillRect(this.x, firstY + this.songPanelHeight * i, this.width, this.songPanelHeight);
