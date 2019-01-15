@@ -204,34 +204,51 @@ class Game {
 	}
 
 	HandleKeyDown(e) {
-		//We should only care about keys that are just pressed, not held down
-		if (e.repeat) {
-			return;
-		}
-
-		switch (e.code) {
-			case "Enter":
-				game.Play();
-
+		switch (game.state) {
+			case 0:
 				break;
 
-			case "ArrowRight":
-				game.songWheel.relativeSelectionIndex = 1;
+			case 1:
 				break;
 
-			case "ArrowLeft":
-				game.songWheel.relativeSelectionIndex = -1;
+			case 2:
 				break;
 
-			default: //Catches lane key presses
-				if (game.state === 4) {
-					for (let i = 0; i < game.currentKeyConfig.keys.length; i++) {
-						if (e.code == game.currentKeyConfig.keys[i]) {
-							game.Judge(i);
-							break;
-						}
-					}
+			case 3:
+				switch (e.code) {
+					case "ArrowRight":
+						game.songWheel.relativeSelectionIndex = 1;
+						break;
+
+					case "ArrowLeft":
+						game.songWheel.relativeSelectionIndex = -1;
+						break;
 				}
+
+				break;
+
+			case 4:
+				//We should only care about keys that are just pressed, not held down
+				if (e.repeat) {
+					return;
+				}
+
+				switch (e.code) {
+					default:
+						//Handle lane keys
+						for (let i = 0; i < game.currentKeyConfig.keys.length; i++) {
+							if (e.code == game.currentKeyConfig.keys[i]) {
+								game.Judge(i);
+								break;
+							}
+						}
+						
+						break;
+				}
+				
+				break;
+
+			case 5:
 				break;
 		}
 	}
