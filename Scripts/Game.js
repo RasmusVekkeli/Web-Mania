@@ -215,6 +215,14 @@ class Game {
 
 				break;
 
+			case "ArrowRight":
+				game.songWheel.relativeSelectionIndex = 1;
+				break;
+
+			case "ArrowLeft":
+				game.songWheel.relativeSelectionIndex = -1;
+				break;
+
 			default: //Catches lane key presses
 				if (game.state === 4) {
 					for (let i = 0; i < game.currentKeyConfig.keys.length; i++) {
