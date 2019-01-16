@@ -264,6 +264,7 @@ class Game {
 						}
 					}
 				}
+
 				break;
 		}
 	}

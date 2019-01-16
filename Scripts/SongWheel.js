@@ -26,7 +26,7 @@ class SongWheel extends GameObject {
 
 		function getLoopingFromArray(array, index) {
 			if (index < 0) {
-				return array[array.length + index];
+				return array[((index % array.length) + array.length) % array.length]; //what
 			}
 
 			return array[index % array.length];
@@ -99,13 +99,24 @@ class SongWheel extends GameObject {
 	}
 
 	set relativeSelectionIndex(relIndex) {
-		this.selectionIndex += relIndex;
+		//If there's less than screen filling amount of songs
+		if (this.songPanelCount !== this.songPanelFitCount) {
+			if (this.selectionIndex + relIndex > game.songList.length - 1 || this.selectionIndex + relIndex < 0) {
+				return;
+			}
 
-		if (this.selectionIndex < this.topIndex + this.selectionPadding) {
-			this.topIndex = this.selectionIndex - this.selectionPadding;
+			this.selectionIndex += relIndex;
 		}
-		else if (this.selectionIndex + 1 > this.topIndex + (this.songPanelCount - this.selectionPadding)) {
-			this.topIndex = this.selectionIndex + 1 - (this.songPanelCount - this.selectionPadding);
+		//If there's more than screen filling amount of songs
+		else {
+			this.selectionIndex += relIndex;
+
+			if (this.selectionIndex < this.topIndex + this.selectionPadding) {
+				this.topIndex = this.selectionIndex - this.selectionPadding;
+			}
+			else if (this.selectionIndex + 1 > this.topIndex + (this.songPanelCount - this.selectionPadding)) {
+				this.topIndex = this.selectionIndex + 1 - (this.songPanelCount - this.selectionPadding);
+			}
 		}
 	}
 }
