@@ -217,11 +217,23 @@ class Game {
 			case 3:
 				switch (e.code) {
 					case "ArrowRight":
-						game.songWheel.relativeSelectionIndex = 1;
+						game.songWheel.relativeSongSelectionIndex = 1;
 						break;
 
 					case "ArrowLeft":
-						game.songWheel.relativeSelectionIndex = -1;
+						game.songWheel.relativeSongSelectionIndex = -1;
+						break;
+
+					case "ArrowDown":
+						game.songWheel.relativeDiffSelectionIndex = 1;
+						break;
+
+					case "ArrowUp":
+						game.songWheel.relativeDiffSelectionIndex = -1;
+						break;
+
+					case "Enter":
+						game.songWheel.Selecter();
 						break;
 				}
 

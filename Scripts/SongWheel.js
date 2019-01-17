@@ -94,7 +94,7 @@ class SongWheel extends GameObject {
 		return this.pos.y + this.pos.h / 2 - this.totalSongPanelHeight / 2;
 	}
 
-	set relativeSelectionIndex(relIndex) {
+	set relativeSongSelectionIndex(relIndex) {
 		//If there's less than screen filling amount of songs
 		if (this.songPanelCount !== this.songPanelFitCount) {
 			if (this.selectionIndex + relIndex > game.songList.length - 1 || this.selectionIndex + relIndex < 0) {
@@ -117,6 +117,16 @@ class SongWheel extends GameObject {
 			else if (this.selectionIndex + 1 > this.topIndex + (this.songPanelCount - this.selectionPadding)) {
 				this.topIndex = this.selectionIndex + 1 - (this.songPanelCount - this.selectionPadding);
 			}
+		}
+	}
+
+	set relativeDiffSelectionIndex(relIndex) {
+		if (this.songSelectedIndex !== null) {
+			if (this.diffSelectionIndex + relIndex > game.songList.getLooping(this.songSelectedIndex).chartList.length - 1 || this.diffSelectionIndex + relIndex < 0) {
+				return;
+			}
+
+			this.diffSelectionIndex += relIndex;
 		}
 	}
 
@@ -170,5 +180,14 @@ class SongWheel extends GameObject {
 
 	DeSelectSong() {
 		this.songSelectedIndex = null;
+	}
+
+	Selecter() {
+		if (this.songSelectedIndex === null) {
+			this.SelectSong();
+		}
+		else {
+			//Load the selected chart or something idk
+		}
 	}
 }
