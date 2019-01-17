@@ -7,10 +7,11 @@
  * chartName: Name of chart
 */
 class ChartFiles {
-	constructor(dataIndex, audioIndex = null, bgIndex = null, chartName = "") {
+	constructor(dataIndex, audioIndex = null, bgIndex = null, chartName = "", keyCount = 0) {
 		this.dataIndex = dataIndex;
 		this.audioIndex = audioIndex;
 		this.bgIndex = bgIndex;
 		this.chartName = chartName;
+		this.keyCount = keyCount;
 	}
 }

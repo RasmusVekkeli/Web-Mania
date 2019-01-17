@@ -154,6 +154,7 @@ async function GenerateSongData(directoryStart, directoryEnd) {
 							let audioFile = rawOsuString.match(/(?<=AudioFilename:).*/);
 							let bgImageFile = rawOsuString.match(/(?<=0,0,").*(?=",0,0)/);
 							let chartName = rawOsuString.match(/(?<=Version:).*/);
+							let keyCount = rawOsuString.match(/(?<=CircleSize:).*/);
 
 							//Check if match exists and find file index if true, assign to null if false
 							if (audioFile !== null) {
@@ -191,8 +192,13 @@ async function GenerateSongData(directoryStart, directoryEnd) {
 								chartName = "";
 							}
 
+							//Check if match exists and store key count if true, store -1 if false
+							if (keyCount !== null) {
+								keyCount = Number(keyCount[0]);
+							}
+
 							//Push to chartList
-							currentSong.chartList.push(new ChartFiles(i, audioFile, bgImageFile, chartName));
+							currentSong.chartList.push(new ChartFiles(i, audioFile, bgImageFile, chartName, keyCount));
 						}
 					}
 				}
