@@ -549,16 +549,16 @@ class Game {
 		var chart = null;
 
 		if (TypeOf(chartI) == "number") {
-			chart = game.songList[songIndex].chartList[chartI];
+			chart = game.songList.getLooping(songIndex).chartList[chartI];
 
 			if (chart === undefined) {
 				console.warn("No chart exists in chartList index " + chartI + " of song " + songIndex);
 			}
 		}
 		else {
-			for (let i = 0; i < game.songList[songIndex].chartList.length; i++) {
-				if (game.songList[songIndex].chartList[i].chartName == chartI) {
-					chart = game.songList[songIndex].chartList[i];
+			for (let i = 0; i < game.songList.getLooping(songIndex).chartList.length; i++) {
+				if (game.songList.getLooping(songIndex).chartList[i].chartName == chartI) {
+					chart = game.songList.getLooping(songIndex).chartList[i];
 					break;
 				}
 			}
