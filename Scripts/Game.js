@@ -545,19 +545,28 @@ class Game {
 		return false;
 	}
 
-	async LoadSong(songIndex, chartName) {
+	async LoadSong(songIndex, chartI) {
 		var chart = null;
 
-		for (let i = 0; i < game.songList[songIndex].chartList.length; i++) {
-			if (game.songList[songIndex].chartList[i].chartName == chartName) {
-				chart = game.songList[songIndex].chartList[i];
-				break;
+		if (TypeOf(chartI) == "number") {
+			chart = game.songList[songIndex].chartList[chartI];
+
+			if (chart === undefined) {
+				console.warn("No chart exists in chartList index " + chartI + " of song " + songIndex);
 			}
 		}
+		else {
+			for (let i = 0; i < game.songList[songIndex].chartList.length; i++) {
+				if (game.songList[songIndex].chartList[i].chartName == chartI) {
+					chart = game.songList[songIndex].chartList[i];
+					break;
+				}
+			}
 
-		if (chart === null) {
-			console.warn("No chart named " + chartName + " was found in song " + songIndex);
-			return false;
+			if (chart === null) {
+				console.warn("No chart named " + chart + " was found in song " + songIndex);
+				return false;
+			}
 		}
 
 		let object = this;
