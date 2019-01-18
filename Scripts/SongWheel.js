@@ -127,6 +127,8 @@ class SongWheel extends GameObject {
 			}
 
 			this.diffSelectionIndex += relIndex;
+
+			game.LoadSong(this.songSelectedIndex, this.diffSelectionIndex);
 		}
 	}
 
@@ -176,6 +178,7 @@ class SongWheel extends GameObject {
 		this.songSelectedIndex = this.selectionIndex;
 		this.topIndex = this.songSelectedIndex - this.selectionPadding;
 		this.diffSelectionIndex = 0;
+		game.LoadSong(this.songSelectedIndex, this.diffSelectionIndex);
 	}
 
 	DeSelectSong() {
@@ -187,7 +190,7 @@ class SongWheel extends GameObject {
 			this.SelectSong();
 		}
 		else {
-			//Load the selected chart or something idk
+			game.Play();
 		}
 	}
 }
