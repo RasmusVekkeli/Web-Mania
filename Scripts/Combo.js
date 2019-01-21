@@ -17,6 +17,10 @@ class Combo extends GameObject{
 		this.smallSize = this.comboNumber.size;
 		this.largeSize = 50;
 
+		this.maxSizeCombo = 10000;
+		this.smallMaxComboSizeAdd = 100;
+		this.largeMaxComboSizeAdd = 120;
+
 		this.time = performance.now();
 	}
 
@@ -40,7 +44,10 @@ class Combo extends GameObject{
 			adjustedT = 0.5 - (this.t - 0.5);
 		}
 
-		this.comboNumber.size = this.smallSize + (this.largeSize - this.smallSize) * adjustedT;
+		let l_size = this.largeSize + this.largeMaxComboSizeAdd * this.size_t;
+		let s_size = this.smallSize + this.smallMaxComboSizeAdd * this.size_t;
+
+		this.comboNumber.size = s_size + (l_size - s_size) * adjustedT;
 
 		//Update X of both text elements to the center of the playfield
 		this.pos.x = game.playfield.pos.x + game.playfield.width / 2;
@@ -53,7 +60,7 @@ class Combo extends GameObject{
 	}
 
 	Draw() {
-		if (this.skipDraw || game.state !== 4) {
+		if (this.skipDraw || game.state !== 4 || game.currentCombo <= 0) {
 			return;
 		}
 
@@ -63,6 +70,20 @@ class Combo extends GameObject{
 
 	get t() {
 		let t = (this.time - this.animationStart) / this.animationLength;
+
+		if (t < 0) {
+			t = 0;
+		}
+
+		if (t > 1) {
+			t = 1;
+		}
+
+		return t;
+	}
+
+	get size_t() {
+		let t = game.currentCombo / this.maxSizeCombo;
 
 		if (t < 0) {
 			t = 0;
