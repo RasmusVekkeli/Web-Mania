@@ -436,6 +436,10 @@ class Game {
 		this.deltaTime = performance.now() - this.lastTime;
 		this.lastTime = performance.now();
 
+		if (this.state !== 0) {
+			this.objectLayers[0].skipDraw = true;
+		}
+
 		if (this.state === 4) {
 			for (let i = 0; i < this.currentChart.keyCount; i++) {
 				if (this.currentChart.noteList[i].length > this.currentScore[i].length) {
@@ -508,6 +512,16 @@ class Game {
 		this.LoadConfiguration();
 
 		this.objectLayers = [
+			new Layer("startInstructionLayer", [
+				new UIText("Welcome!", this.context.canvas.width / 2, 10, 0, -1, 90),
+				new UIText("Instructions to start:", 10, 120, -1, -1, 40),
+				new UIText("1. When prompted, choose a folder that contains your osu! beatmaps.", 10, 170, -1, -1, 40),
+				new UIText("2. Wait for your files to get loaded into your browser. This will take up to couple of minutes.", 10, 250, -1, -1, 40),
+				new UIText("Your browser might be unresponsive during the loading.", 10, 300, -1, -1, 40),
+				new UIText("3. When the loading is done, the program will start parsing the files.", 10, 380, -1, -1, 40),
+				new UIText("The progress of parsing is indicated by a progress bar.", 10, 430, -1, -1, 40),
+				new UIText("Press Enter to start.", this.context.canvas.width / 2, this.context.canvas.height - 10, 0, 1, 90),
+				]),
 			new Layer("bgLayer", [new BGImage(null, false, false, true)]),
 			new Layer("playfieldLayer", [new Playfield()]),
 			new Layer("playfieldUILayer", [new JudgementText(), new Combo()]),
