@@ -115,6 +115,9 @@ class Game {
 
 		this.autoPlay = true;
 
+		this.currentProgress = 0;
+		this.endProgress = 0;
+
 		this.config = {};
 		this.defaultConfig = {
 			keyConfigs: [
@@ -519,9 +522,10 @@ class Game {
 				new UIText("2. Wait for your files to get loaded into your browser. This will take up to couple of minutes.", 10, 250, -1, -1, 40),
 				new UIText("Your browser might be unresponsive during the loading.", 10, 300, -1, -1, 40),
 				new UIText("3. When the loading is done, the program will start parsing the files.", 10, 380, -1, -1, 40),
-				new UIText("The progress of parsing is indicated by a progress bar.", 10, 430, -1, -1, 40),
+				new UIText("The progress of parsing is indicated by a progress bar.", 10, 430, -1, -1, 40), 
 				new UIText("Press Enter to start.", this.context.canvas.width / 2, this.context.canvas.height - 10, 0, 1, 90),
-				]),
+			]),
+			new Layer("songListGeneratorLayer", [new ProgressBar(new Rect(100, this.context.canvas.height - 100, this.context.canvas.width - 200, 60, true), "#FFFFFF")]),
 			new Layer("bgLayer", [new BGImage(null, false, false, true)]),
 			new Layer("playfieldLayer", [new Playfield()]),
 			new Layer("playfieldUILayer", [new JudgementText(), new Combo()]),
