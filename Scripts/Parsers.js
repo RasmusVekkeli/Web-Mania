@@ -66,6 +66,8 @@ async function GenerateSongList(clearList = true) {
 	let currentDirectory = null;
 	let directoryStartIndex = null;
 
+	game.endProgress = game.directorySelector.files.length;
+
 	for (let i = 0; i < game.directorySelector.files.length; i++) {
 		//Check if we're not in the same directory, if true process the folder
 		if (currentDirectory != TrimPathString(game.directorySelector.files[i].webkitRelativePath)) {
@@ -82,7 +84,8 @@ async function GenerateSongList(clearList = true) {
 			currentDirectory = TrimPathString(game.directorySelector.files[i].webkitRelativePath);
 		}
 
-		console.log(i + " files out of " + game.directorySelector.files.length + " processed");
+		//console.log(i + " files out of " + game.directorySelector.files.length + " processed");
+		game.currentProgress = i;
 	}
 
 	//Wait until song data has been generated
@@ -93,7 +96,8 @@ async function GenerateSongList(clearList = true) {
 		game.songList.push(result);
 	}
 
-	console.log("List generation done!");
+	game.state = 3;
+
 	return;
 }
 

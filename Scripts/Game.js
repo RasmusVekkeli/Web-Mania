@@ -206,9 +206,19 @@ class Game {
 		this.comboText.Animate();
 	}
 
+	HandleChange(e) {
+		game.state = 2;
+		GenerateSongList();
+	}
+
 	HandleKeyDown(e) {
 		switch (game.state) {
 			case 0:
+				switch (e.code) {
+					case "Enter":
+						game.directorySelector.click();
+						break;
+				}
 				break;
 
 			case 1:
@@ -441,6 +451,10 @@ class Game {
 
 		if (this.state !== 0) {
 			this.objectLayers[0].skipDraw = true;
+
+			if (this.state !== 2) {
+				this.objectLayers[1].skipDraw = true;
+			}
 		}
 
 		if (this.state === 4) {
@@ -548,6 +562,8 @@ class Game {
 		//Add event listeners to key presses and releases
 		addEventListener("keydown", this.HandleKeyDown);
 		addEventListener("keyup", this.HandleKeyUp);
+
+		this.directorySelector.addEventListener("change", this.HandleChange);
 
 		//Intervals are unfortunately capped at 4 ms (250 intervals per second). There seems to be no workarounds for this
 		this.tickInterval = setInterval(this.Tick);
