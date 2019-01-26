@@ -122,7 +122,7 @@ class Playfield extends GameObject {
 					while (this.longNoteYsToRender.length > 0) {
 						let longNoteYs = this.longNoteYsToRender.pop();
 
-						game.context.fillStyle = "#FFFFFF";
+						game.context.fillStyle = "rgba(255, 255, 255, 0.4)";
 						game.context.fillRect(this.pos.x + this.keyConfig.laneWidth * i, longNoteYs.y, this.keyConfig.laneWidth, longNoteYs.endY - longNoteYs.y);
 					}
 
