@@ -435,7 +435,7 @@ class Game {
 	}
 
 	Stop() {
-		game.state = 5;
+		game.state = 3;
 	}
 
 	async LoadAndPlay(songIndex, chartName, rate = 1.0) {
