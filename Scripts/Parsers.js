@@ -96,6 +96,19 @@ async function GenerateSongList(clearList = true) {
 		game.songList.push(result);
 	}
 
+	game.songList = game.songList.sort(function (a, b) {
+		var nameA = a.title.toUpperCase();
+		var nameB = b.title.toUpperCase();
+		if (nameA < nameB) {
+			return -1;
+		}
+		if (nameA > nameB) {
+			return 1;
+		}
+
+		return 0;
+	});
+
 	game.state = 3;
 
 	return;
