@@ -3,6 +3,7 @@
  * 
  * Inherits from GameObject class
  * 
+ * Properties:
  * imageObject: HTML image element which contains the image. The image should be loaded before passing it to the class.
  * pos: Rect object which stores the image's position and dimensions for rendering.
  * 
@@ -15,21 +16,19 @@
  * 
  * Functions:
  * Update: This function does nothing. It is here to overwrite GameObject class's Update function to avoid unintended "not implemented" errors.
- * Update function parameters:
- * none
+ * Parameters: none
  * 
  * 
  * Draw: This function draws the background image if present and if skipDraw is not set to true
- * Draw function parameters:
- * none
+ * Parameters: none
+ * 
  * 
  * UpdateBGImage: This function updates imageObject from game.currentBG and recalculates dimensions based on the new image
  * Parameters: none
  * 
  * 
  * CalculateImageCoordinates: Calculates the centered image position and scaling for rendering and stores it in pos-property
- * CalculateImageCoordinates function parameters:
- * none
+ * Parameters: none
 */
 class BGImage extends GameObject {
 	constructor(htmlImageElement, skipUpdate = false, skipDraw = false, skipTypeCheck = false) {
