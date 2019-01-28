@@ -113,7 +113,7 @@ class Game {
 
 		this.objectLayers;
 
-		this.autoPlay = true;
+		this.autoPlay = false;
 
 		this.currentProgress = 0;
 		this.endProgress = 0;
