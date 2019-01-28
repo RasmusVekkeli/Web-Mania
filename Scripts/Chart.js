@@ -3,11 +3,39 @@
  * 
  * Properties:
  * previewTime: Time point in milliseconds from start of chart which marks the point where the chart preview should start
- * nPlus1: Boolean which determines if chart should be treated as N + 1 Key chart
+ * nPlus1: Boolean which determines if chart should be treated as N + 1 Key chart, unused
  * keyCount: Number of keys chart uses
  * timingPoints: Array of TimingPoint objects
+ * originalTimingPoints: Array of original (not mutaded by rates) timing objects
  * scrollSpeedPoints: Array of ScrollSpeedPoint objects
+ * originalScrollSpeedPoints: Array of original (not mutated by rates) ScrollSpeedPoint objects
  * noteList: 2 dimensional array where first dimension determines lane and second one is array of Note objects. For example this.noteList[3][1] accesses second note of fourth lane.
+ * originalNoteList: Same as noteList except contains original (not mutated by rates) notes.
+ * 
+ * Constructor parameters: none
+ * 
+ * 
+ * Functions:
+ * ParseOsuFile: Parses given .osu file into chart object
+ * Parameters:
+ * fileIndex: The index of the file in game.directorySelector.files array
+ * 
+ * 
+ * ColumnFromValue: Returns a column value using an X-coordinate value and key count from .osu file
+ * Parameters:
+ * value: X-coordinate of a note.
+ * keyCount: Key count of chart the note is in
+ * 
+ * 
+ * NoteTypeFromValue: Returns a note type from value from .osu file
+ * Parameters:
+ * value: Note type value
+ * 
+ * 
+ * get firstNote: Returns first note of the Chart object
+ * 
+ * 
+ * get lastNote: Returns last note of the Chart object
 */
 class Chart {
 	constructor() {
@@ -22,8 +50,6 @@ class Chart {
 
 		this.noteList = [[]];
 		this.originalNoteList = [[]];
-
-		this.majorBPM;
 	}
 
 	static async ParseOsuFile(fileIndex) {
@@ -161,8 +187,6 @@ class Chart {
 		returnChart.timingPoints.sort(function (a, b) { a.time - b.time });
 		returnChart.originalTimingPoints = JSON.parse(JSON.stringify(returnChart.timingPoints));
 
-		//returnChart.majorBPM = Chart.CalculateMajorBPM(returnChart.timingPoints, returnChart.firstNote, returnChart.lastNote);
-
 		return returnChart;
 	}
 
@@ -187,74 +211,6 @@ class Chart {
 		}
 
 		return false;
-	}
-
-	static CalculateMajorBPM(timingPoints, firstNote, lastNote) {
-		if (timingPoints.length == 1) {
-			return timingPoints[0].bpm;
-		}
-
-		var bpmLengths = [];
-
-		var firstPoint;
-		var lastPoint;
-
-		if (firstNote.time < timingPoints[0].time) {
-			firstPoint = 0;
-		}
-		else {
-			//Get first point
-			for (let i = 0; i < timingPoints.length; i++) {
-				if (timingPoints[i].time <= firstNote.time && timingPoints[i + 1] > firstNote.time) {
-					firstPoint = i;
-					break;
-				}
-			}
-		}
-
-		//Get last point
-		for (let i = timingPoints.length - 1; i > 0; i--) {
-			if (timingPoints[i].time < lastNote.time) {
-				lastPoint = i;
-				break;
-			}
-		}
-
-		bpmLengths.push({ bpm: timingPoints[firstPoint].bpm, length: firstNote.time - timingPoints[firstPoint + 1] });
-
-		if (bpmLengths[0].bpm == timingPoints[lastPoint].bpm) {
-			bpmLengths[0].length += lastNote.time - timingPoints[lastPoint].time;
-		}
-		else {
-			bpmLengths.push({ bpm: timingPoints[lastPoint].bpm, length: lastNote.time - timingPoints[lastPoint].time });
-		}
-
-		for (let i = firstPoint + 1; i < lastPoint; i++) {
-			let found = false;
-
-			for (let j = 0; j < bpmLengths.length; j++) {
-				if (bpmLengths[j].bpm == timingPoints[i].bpm) {
-					bpmLengths[j].length += timingPoints[i + 1].time - timingPoints[i].time;
-					found = true;
-				}
-			}
-
-			if (!found) {
-				bpmLengths.push({ bpm: timingPoints[i].bpm, length: timingPoints[i + 1].time - timingPoints[i].time });
-			}
-		}
-
-		let longestBPM;
-		let longestValue = 0;
-
-		for (let i = 0; i < bpmLengths.length; i++) {
-			if (bpmLengths[i].length > longestValue) {
-				longestValue = bpmLengths[i].length;
-				longestBPM = bpmLengths[i].bpm;
-			}
-		}
-
-		return longestBPM;
 	}
 
 	get firstNote() {
