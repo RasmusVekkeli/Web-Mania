@@ -85,45 +85,40 @@
  * Parameters:
  * lane: The lane the judgement is for.
  * 
- * 
- * Play: Resets timers and starts the current chart for playing
- * Parameters: none 
- * 
- * Update: Calls Update on each element of "objects" array
- * 
+ * LoadConfiguration: Clones defaultConfig object to config and fetches non default configs (as JSON string) from localStorage and overwrites the config object with it.
  * Parameters: none
  * 
- * Return value: none
- * 
- * 
- * Draw: Calls Draw on each element of "objects" array
- * 
+ * SaveConfiguration: Saves config object as JSON string into localStorage.
  * Parameters: none
  * 
- * Return value: none
+ * Play: Starts the gameplay for the current loaded chart. Also makes note calculations based on the inserted rate.
+ * Parameters:
+ * rate: The rate the chart should be played on.
  * 
- * 
- * Tick: Calls Update and Draw on the game object
- * 
+ * Stop: Sets game state to "song selection". Effectively hides the playfield and shows the songwheel.
  * Parameters: none
  * 
- * Return value: none
- * 
- * 
- * Start: Initializes some variables that can't be initialized in contructor and starts tick interval
- * 
+ * Update: Runs code unrelated to drawing that needs to be ran each frame. Check the funtion itself for specifics.
  * Parameters: none
  * 
- * Return value: none
+ * Draw: Runs code related to drawing (and the drawing code itself) each frame.
+ * Parameters: none
  * 
+ * Tick: Calls Update and Draw functions.
+ * Parameters: none
  * 
- * LoadSong: Loads files of a single chart into variables
+ * Start: Initializes object layers and adds event listeners + some other necessary code that couldn't be ran in the constructor for some reason.
+ * Parameters: none
  * 
- * Parameters: 
- * songIndex: Index of a Song object in the songList array
- * chartName: Name of the chart desired. 
+ * GetLayerByName: Returns a reference to Layer object whose name matches. Returns false if no matches were found.
+ * Parameters:
+ * name: A string of the name of the layer.
  * 
- * Return value: false if loading fails, none otherwise.
+ * LoadSong: Loads and parses the chart file into a Chart object, loads bg image and audio files and sets them to currentChart, currentBG and currentAudio variables.
+ * Parameters:
+ * songIndex: Index of the song in the songList array.
+ * chartI: Index of the chart in chartList array of a Song object, or name of the chart in chartList array of a Song object.
+ * 
 */
 class Game {
 	constructor() {
@@ -502,11 +497,6 @@ class Game {
 		game.state = 3;
 	}
 
-	async LoadAndPlay(songIndex, chartName, rate = 1.0) {
-		await this.LoadSong(songIndex, chartName);
-		this.Play(rate);
-	}
-
 	Update() {
 		this.currentPlayTime = performance.now() - this.playStartTime;
 
@@ -590,10 +580,12 @@ class Game {
 	}
 
 	Start() {
+		//Load config objects
 		this.LoadConfiguration();
 
+		//Setup objectlayers
 		this.objectLayers = [
-			new Layer("startInstructionLayer", [
+			new Layer("startInstructionLayer", [ //Contains the text of the first screen. Probably better ways to do this but this works for now.
 				new UIText("Welcome!", this.context.canvas.width / 2, 10, 0, -1, 90),
 				new UIText("Instructions to start:", 10, 120, -1, -1, 40),
 				new UIText("1. When prompted, choose a folder that contains your osu! beatmaps.", 10, 170, -1, -1, 40),
@@ -603,12 +595,12 @@ class Game {
 				new UIText("The progress of parsing is indicated by a progress bar.", 10, 430, -1, -1, 40), 
 				new UIText("Press Enter to start.", this.context.canvas.width / 2, this.context.canvas.height - 10, 0, 1, 90),
 			]),
-			new Layer("songListGeneratorLayer", [new ProgressBar(new Rect(100, this.context.canvas.height - 100, this.context.canvas.width - 200, 60, true), "#FFFFFF")]),
-			new Layer("bgLayer", [new BGImage(null, false, false, true)]),
-			new Layer("playfieldLayer", [new Playfield()]),
-			new Layer("playfieldUILayer", [new JudgementText(), new Combo()]),
-			new Layer("songSelectUILayer", [new SongWheel()]),
-			new Layer("debugUILayer", [new UIText("", 10, 10, -1, -1, 30, "Arial")]),
+			new Layer("songListGeneratorLayer", [new ProgressBar(new Rect(100, this.context.canvas.height - 100, this.context.canvas.width - 200, 60, true), "#FFFFFF")]), //Generator screen. Only contains the progress bar.
+			new Layer("bgLayer", [new BGImage(null, false, false, true)]), //Background image layer
+			new Layer("playfieldLayer", [new Playfield()]),	//Playfield layer
+			new Layer("playfieldUILayer", [new JudgementText(), new Combo()]), //Playfield UI layer (combo, judgement text)
+			new Layer("songSelectUILayer", [new SongWheel()]), //Songwheel layer
+			new Layer("debugUILayer", [new UIText("", 10, 10, -1, -1, 30, "Arial")]), //FPS text layer
 		];
 
 		//Set up easier to access references to objects
