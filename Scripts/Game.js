@@ -1,14 +1,53 @@
 /*
  * Class for managing game states and global varables needed by game objects
  * 
- * context: Context-object for the game canvas. The canvas element can be accessed using this.context.canvas
+ * Properties:
+ * context: a 2D context-object for the game canvas. The canvas element can be accessed using this.context.canvas
  * directorySelector: Input HTML Element used to choose files. Note that this element won't be added to the document and is only accessed using JS.
+ * 
  * songList: Array of Song objects.
  * currentChart: A Chart object, which represents the current playing chart
  * currentAudio: An Audio object, which contains loaded audio file of the current chart, or null if no such file exists
  * currentBG: An Image object, which contains loaded image file of the current chart, of null if no such file exists
+ * currentTimingSection: A value which holds the index to the current timing section of the current chart
+ * 
+ * judgeOffset: A value which is added to currentTime when checking for hits
+ * universalOffset: A value which is added to playStartTime at when the chart is started using the Play function. This effectively offsets notes to the music.
+ * showFPS: Toggles fps text
+ * 
+ * playDelay: Delays the start of the chart by this many milliseconds. Is done to avoid the charts starting too fast after the Play function is called.
+ * state: Holds the current screen the game is at. States are listed next to the variable below
+ * 
+ * deltaTime: Holds the time difference between current and last frame. Unused.
+ * lastTime: Holds the timestamp of the last frame. Used for calculating deltaTime.
+ * lastFPS: Holds the FPS value of the last second. This value is displayed on the UI.
+ * FPScounter: Holds the frame count for the current second.
+ * nextFPSUpdate: Holds the second (note: not millisecond) where lastFPS will be set to the value of FPScounter. FPScounter will be cleared.
+ * 
+ * currentScore: A 2 dimensional array which holds judgements for each note. First dimension is for note lane, second is for the individual note. Both dimensions' maximum length should be equal to the dimensions' of the noteList of currentChart.
+ * currentCombo: Holds the current combo value. Gets set to 0 on start of chart or missing a note.
  * playStartTime: Time stamp which tracks when the chart started playing
- * objects: Array of objects which need rendering and/or updating
+ * 
+ * objectLayers: An array containing Layer objects. Each layer contains object(s) which have Update and Draw functions, which are called each frame if layers are not set to skip these.
+ * autoPlay: Toggles automatic play of the game. Autoplay will hit every note with Marvelous judgement.
+ * 
+ * currentProgress: A value representing current progress of chart list generation.
+ * endProgress: A value representing all possible progress of chart list generation. Effectively the lenght of the file list.
+ * 
+ * config: Holds an object filled with settings used for preferences. Gets set by LoadConfiguration function at the start of the game and gets saved as JSON to localStorage with SaveConfiguration function.
+ * defaultConfig: Holds an object filled with default settings used for preferences. This object should not be chaged on runtime.
+ * 
+ * hitWindows: Holds all judgements and their hit windows.
+ * lastJudgement: Holds a reference to the last judgement of gameplay. Is set by Judge function or Update function.
+ * 
+ * bgImage: A reference to BGImage object. This object is used to draw the chart background image.
+ * playfield: A reference to Playfield object. This object is used to draw the playfield and its notes.
+ * judgementText: A reference to JudgementText object. This object is used to draw the judgment text of the last hit (or missed) note.
+ * comboText: A reference to Combo object. This object is used to draw the current combo number and the "COMBO" text under it.
+ * songWheel: A reference to SongWheel object. This object is used to draw the song selection wheel.
+ * fpsText: A reference to UIText object. This object is used to draw the FPS number at the top left of the screen.
+ * 
+ * tickInterval: An interval ID of the tick. This interval runs as many times as possible (capped at 4ms between each tick).
  * 
  * Constructor parameters:
  * none
@@ -16,14 +55,39 @@
  * Getters:
  * aspectRatio: Returns canvas aspect ratio as number
  * inverseAspectRatio: Returns canvas inverse aspect ratio as number, might not be used 
+ * beatT: Returns a linear interpolation value between 0 and 1 based on the current time and BPM of the current timing section.
+ * currentKeyConfig: Returns a key specific config object for the keyCount of the currentChart, which is created by overwriting global keyconfig values with the key specific ones.
  * 
  * Functions: 
- * Play: Resets timers and starts the current chart for playing
- * 
+ * UpdateFPS: Sets lastFPS to the value of FPScounter, sets FPScouter to 0, sets FPS and increments nextFPSUpdate by 1.
  * Parameters: none
  * 
- * Return value: none
+ * IncrementCombo: Adds 1 to currentCombo and sets the comboText object to animate.
+ * Parameters: none
  * 
+ * HandleChange: Event handler for directorySelector.change event. Changes game state to 2 (generating song list) and start song list generation.
+ * Parameters: 
+ * e: The Change event object passed by the event itself.
+ * 
+ * HandleKeyDown: Event handler for the user pressing keys down on the keyboard. Does different things depending on the game state. Basically does things (or ignores keypresses) when user hits the keyboard.
+ * Parameters:
+ * e: The KeyDown event object passed by the event itself.
+ * 
+ * HandleKeyUp: Event handler for user releasing pressed keys. Is only used for detecting released long notes (note: long note releases are timed as judgements).
+ * Parameters:
+ * e: The KeyUp event object passed by the event itself.
+ * 
+ * Judge: Processes scoring of a note hit and stores the result in the currentScore array. Won't do anything if autoPlay is set to true.
+ * Parameters:
+ * lane: The lane the judgement is for. 
+ * 
+ * JudgeLNEnd: Processes scoring of a long note released and stores the result in currentScore array. Won't do anything if autoPlay is set to true.
+ * Parameters:
+ * lane: The lane the judgement is for.
+ * 
+ * 
+ * Play: Resets timers and starts the current chart for playing
+ * Parameters: none 
  * 
  * Update: Calls Update on each element of "objects" array
  * 
@@ -92,11 +156,11 @@ class Game {
 		/*
 		 * States:
 		 * 0: Initial State
-		 * 1: Waiting for browser to generate file list
+		 * 1: Waiting for browser to generate file list (unused due to impossibility to detect when the browser is doing so)
 		 * 2: Generating song list
 		 * 3: Song selection menu
 		 * 4: In game
-		 * 5: Results
+		 * 5: Results (unused since no result screen is currently implemented)
 		*/
 
 		this.deltaTime = 0;
