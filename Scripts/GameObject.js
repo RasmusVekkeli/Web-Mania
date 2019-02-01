@@ -2,19 +2,17 @@
  * Template class for all game objects. Should only be inherited, not to be used as itself
  * 
  * Constructor parameters:
- * skipUpdate: Used for skipping updates for this object
- * skipDraw: Used for skipping drawing for this object
+ * skipUpdate: Used for skipping Update function calls for this object
+ * skipDraw: Used for skipping Draw function calls for this object
  * skipTypeCheck: Skips parameter type validation if true. Should only be true in class constructors that inherit from this class
  * 
  * Functions:
  * Update: Used for processing updates for the game object. Inheriting classes which have no implementation of their own of this function will throw error if called.
- * Update parameters:
- * none
+ * Update parameters: none
  * 
  * 
  * Draw: Used for drawing game objects on screen. Inheriting classes which have no implementation of their own of this function will throw error if called.
- * Draw parameters:
- * none
+ * Draw parameters: none
 */
 class GameObject {
 	constructor(skipUpdate = false, skipDraw = false, skipTypeCheck = false) {
