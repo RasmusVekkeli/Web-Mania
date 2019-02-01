@@ -1,6 +1,10 @@
 /*
  * Template class for all game objects. Should only be inherited, not to be used as itself
  * 
+ * Properties:
+ * skipUpdate: Skips Update function call if true. (Should be implemented as such in inheriting class)
+ * skipDraw: Skips Draw function call if true. (Should be implemented as such in inheriting class)
+ * 
  * Constructor parameters:
  * skipUpdate: Used for skipping Update function calls for this object
  * skipDraw: Used for skipping Draw function calls for this object
