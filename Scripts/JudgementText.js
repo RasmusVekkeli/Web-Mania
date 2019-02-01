@@ -1,4 +1,25 @@
-class JudgementText extends UIText{
+/*
+ * Class for drawing and animating the judgement text ("Marvelous!!", "Perfect!", "Miss" etc.) during gameplay.
+ * 
+ * Inherits from UIText class
+ * 
+ * Properties:
+ * animationStart: Holds the timestamp of the start of the animation
+ * animationLength: Determines the length of the animation in milliseconds
+ * smallSize: Smallest size for the text itself in pixels
+ * largeSize: Largest size for the text in pixels (if this value is the same as smallSize, it effectively removes the animation)
+ * time: Holds the current time used for animation calculations
+ * textStyle: Holds the text style (color) used for the text
+ * 
+ * Constructor parameters: none
+ * 
+ * Functions:
+ * Animate: Starts the animation. Sets the animationStart to current time.
+ * Update: Calculates animation sizes and sets the object's size to it, updates the text used for the drawing.
+ * 
+ * get t: Returns linear interpolation value between animation lenght and current animation time.
+*/
+class JudgementText extends UIText {
 	constructor() {
 		super("", 0, 640, 0, 0, 60, "Arial");
 
