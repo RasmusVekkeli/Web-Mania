@@ -13,6 +13,7 @@
  * snapColours: An array of HTML colours (rgb, rgba, hex) which determines the colours of the notes for each snap. Unimplemented.
  * beatLineHeight: Determines the height of the gradient which pulses to the beat. Set to 0 to effectively disable.
  * beatLineColour: Colour of the gradient.
+ * keys: Array of keycodes (event.code) which each key represents one lane (0: left most one)
 */
 class KeyConfig {
 	constructor(keys, laneWidth, hitPosition, downScroll, scrollSpeedMult, specialLane, specialLaneLeft, barNoteHeight, noteSkin, snapColours, beatLineHeight, beatLineColour) {
