@@ -1,3 +1,39 @@
+/*
+ * Class for managing and rendering the playfield
+ * 
+ * Inherits from GameObject class.
+ * 
+ * Properties: 
+ * keyConfig: A constructed KeyConfig object (see Game class's get currentKeyConfig getter) which stores settings for the current keymode.
+ * pos: A Rect object which stores the dimensions of the playfield. Note: some values (such as width of the playfield) are calculated separately from this object.
+ * nextNoteIndex: An array which stores the indexes of the next note which has not already left the screen. Used for determining the first note to be checked for position (see Draw function).
+ * noteYsToRender: An array of Y coordinate values of the notes to be rendered on screen. 
+ * longNoteYsToRender: An array of renderLNYs objects (see Draw function) which determines the long note Y coordinates (head and tail of the long note) to use for rendering
+ * beatLineGradient: A linear gradient color object. Used to render the beatline. Has to be recreated each frame with new values since it can't be directly modified outside of the constructor for some reason.
+ * 
+ * Constructor parameters:
+ * none
+ * 
+ * Functions:
+ * Update: Recreates the beatLineGradient
+ * Parameters: none
+ * 
+ * Draw: Draws the playfield and notes on screen. Only notes that are on screen are drawn. Each note is checked if it's on screen. Checks start at the index stored in nextNoteIndex array where index value in position 0 is left most lane.
+ * Parameters: none
+ * 
+ * CalculateY: Returns the Y coordinate of a given note object. The function returns automatically downscroll and upscroll values depending if keyConfig.downScroll value is true or not.
+ * Parameters: A note object whose Y coordinate needs calculating.
+ * Return value: A number of the Y screen coordinate of the note given.
+ * 
+ * ReloadPlayfieldParameters: Recontructs the keyConfig object and recalculates the playfield position (pos object).
+ * Parameters: none
+ * 
+ * get centeredPosition: Returns an X coordinate where the playfield has to be drawn at for it to be centered horizontally.
+ * 
+ * get width: Returns the width in pixels of the current playfield.
+ * 
+ * get hitPositionY: Returns the Y coordinate of the hitposition with automatically calculated downscroll or upscroll value (see CalculateY function).
+*/
 class Playfield extends GameObject {
 	constructor() {
 		super(false, false, true);
@@ -17,7 +53,7 @@ class Playfield extends GameObject {
 			let adjustedT = game.beatT * 2;
 
 			if (adjustedT > 1) {
-				adjustedT = 0.9999; //Because if both gradient stops are 0 it turns into solid color of white instead of transparent (in my case) for some reason. Blame the web API guys, not me.
+				adjustedT = 0.9999; //Because if both gradient stops are the same it turns into solid color of white instead of transparent (in my case) for some reason. Blame the web API guys, not me.
 			}
 
 			this.beatLineGradient = game.context.createLinearGradient(0, this.hitPositionY, 0, this.hitPositionY + (this.keyConfig.downScroll ? -this.keyConfig.beatLineHeight : this.keyConfig.beatLineHeight));
@@ -47,6 +83,7 @@ class Playfield extends GameObject {
                     noteFor:
 					//Calculate Y-values
 					for (let j = this.nextNoteIndex[i]; j < game.currentChart.noteList[i].length; j++) {
+						//A constructor for object which stores long note Y coordinates, only used inside Draw function
 						function renderLNYs (y, endY) {
 							this.y = y;
 							this.endY = endY;
@@ -114,7 +151,6 @@ class Playfield extends GameObject {
 
 							case 2:
 								break;
-
 						}
 					}
 
@@ -136,18 +172,6 @@ class Playfield extends GameObject {
 		}
 	}
 
-	get centeredPosition() {
-		return (game.context.canvas.width - this.width) / 2;
-	}
-
-	get width() {
-		return (game.currentChart === null ? 0 : game.currentChart.keyCount) * this.keyConfig.laneWidth;
-	}
-
-	get hitPositionY() {
-		return this.keyConfig.downScroll ? game.context.canvas.height - this.keyConfig.hitPosition : this.keyConfig.hitPosition;
-	}
-
 	CalculateY(note) {
 		if (this.keyConfig.downScroll) {
 			return game.context.canvas.height - this.keyConfig.hitPosition + (game.currentPlayTime - note.time) * this.keyConfig.scrollSpeedMult;
@@ -161,5 +185,17 @@ class Playfield extends GameObject {
 		this.keyConfig = game.currentKeyConfig;
 
 		this.pos = new Rect(this.centeredPosition, 0, this.keyConfig.laneWidth * (game.currentChart === null ? 0 : game.currentChart.keyCount), game.context.canvas.height);
+	}
+
+	get centeredPosition() {
+		return (game.context.canvas.width - this.width) / 2;
+	}
+
+	get width() {
+		return (game.currentChart === null ? 0 : game.currentChart.keyCount) * this.keyConfig.laneWidth;
+	}
+
+	get hitPositionY() {
+		return this.keyConfig.downScroll ? game.context.canvas.height - this.keyConfig.hitPosition : this.keyConfig.hitPosition;
 	}
 }
