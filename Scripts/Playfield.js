@@ -48,6 +48,10 @@ class Playfield extends GameObject {
 	}
 
 	Update() {
+		if (this.skipUpdate) {
+			return;
+		}
+
 		if (game.state !== 4) {
 			return;
 		}
