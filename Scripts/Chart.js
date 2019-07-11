@@ -176,15 +176,15 @@ class Chart {
 		}
 
 		for (let i = 0; i < returnChart.noteList.length; i++) {
-			returnChart.noteList[i].sort(function (a, b) { a.time - b.time });
+			returnChart.noteList[i].sort(function (a, b) { return a.time - b.time });
 		}
 
 		returnChart.originalNoteList = JSON.parse(JSON.stringify(returnChart.noteList));
 
-		returnChart.scrollSpeedPoints.sort(function (a, b) { a.time - b.time });
+		returnChart.scrollSpeedPoints.sort(function (a, b) { return a.time - b.time });
 		returnChart.originalScrollSpeedPoints = JSON.parse(JSON.stringify(returnChart.scrollSpeedPoints));
 
-		returnChart.timingPoints.sort(function (a, b) { a.time - b.time });
+		returnChart.timingPoints.sort(function (a, b) { return a.time - b.time });
 		returnChart.originalTimingPoints = JSON.parse(JSON.stringify(returnChart.timingPoints));
 
 		return returnChart;
